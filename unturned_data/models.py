@@ -17,16 +17,15 @@ from pydantic import BaseModel, ConfigDict, computed_field
 # ---------------------------------------------------------------------------
 # DamageStats
 # ---------------------------------------------------------------------------
-@dataclass
-class DamageStats:
+class DamageStats(BaseModel):
     """Damage values and body-part multipliers."""
 
     player: float = 0
     zombie: float = 0
     animal: float = 0
-    player_multipliers: dict[str, float] = field(default_factory=dict)
-    zombie_multipliers: dict[str, float] = field(default_factory=dict)
-    animal_multipliers: dict[str, float] = field(default_factory=dict)
+    player_multipliers: dict[str, float] = {}
+    zombie_multipliers: dict[str, float] = {}
+    animal_multipliers: dict[str, float] = {}
     barricade: float = 0
     structure: float = 0
     vehicle: float = 0
@@ -70,8 +69,7 @@ class DamageStats:
 # ---------------------------------------------------------------------------
 # ConsumableStats
 # ---------------------------------------------------------------------------
-@dataclass
-class ConsumableStats:
+class ConsumableStats(BaseModel):
     """Stats for consumable items (food, water, medical)."""
 
     health: float = 0
@@ -111,8 +109,7 @@ class ConsumableStats:
 # ---------------------------------------------------------------------------
 # StorageStats
 # ---------------------------------------------------------------------------
-@dataclass
-class StorageStats:
+class StorageStats(BaseModel):
     """Storage dimensions (inventory grid slots)."""
 
     width: int = 0
