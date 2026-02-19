@@ -10,3 +10,4 @@ build/
 .mypy_cache/
 .venv/
 venv/
+.worktrees/
