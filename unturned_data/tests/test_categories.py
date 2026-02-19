@@ -16,15 +16,19 @@ from unturned_data.categories import (
     TYPE_REGISTRY,
     parse_entry,
     Animal,
+    Attachment,
     BarricadeItem,
     Clothing,
     Consumeable,
     GenericEntry,
     Gun,
+    Magazine,
     MeleeWeapon,
     StructureItem,
+    Throwable,
     Vehicle,
 )
+from unturned_data.models import SpawnTable, SpawnTableEntry
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -109,10 +113,10 @@ class TestGun:
         raw, english = _load_fixture("gun_maplestrike")
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         d = gun.to_dict()
-        assert d["slot"] == "Primary"
-        assert d["firerate"] == 5
-        assert d["range"] == 200
-        assert d["damage"]["player"] == 40
+        assert d["parsed"]["slot"] == "Primary"
+        assert d["parsed"]["firerate"] == 5
+        assert d["parsed"]["range"] == 200
+        assert d["parsed"]["damage"]["player"] == 40
 
     def test_dispatch_via_parse_entry(self):
         raw, english = _load_fixture("gun_maplestrike")
@@ -412,9 +416,9 @@ class TestVehicle:
         raw, english = _load_fixture("vehicle_humvee")
         vehicle = Vehicle.from_raw(raw, english, "vehicle_humvee")
         d = vehicle.to_dict()
-        assert d["speed_max"] == 14
-        assert d["fuel_capacity"] == 2000
-        assert d["trunk_x"] == 6
+        assert d["parsed"]["speed_max"] == 14
+        assert d["parsed"]["fuel_capacity"] == 2000
+        assert d["parsed"]["trunk_x"] == 6
 
     def test_dispatch_via_parse_entry(self):
         raw, english = _load_fixture("vehicle_humvee")
@@ -474,9 +478,9 @@ class TestAnimal:
         raw, english = _load_fixture("animal_bear")
         animal = Animal.from_raw(raw, english, "animal_bear")
         d = animal.to_dict()
-        assert d["health"] == 100
-        assert d["damage"] == 20
-        assert d["behaviour"] == "Offense"
+        assert d["parsed"]["health"] == 100
+        assert d["parsed"]["damage"] == 20
+        assert d["parsed"]["behaviour"] == "Offense"
 
     def test_dispatch_via_parse_entry(self):
         raw, english = _load_fixture("animal_bear")
@@ -552,3 +556,140 @@ class TestTypeRegistry:
         from unturned_data.models import BundleEntry
         for type_name, cls in TYPE_REGISTRY.items():
             assert issubclass(cls, BundleEntry), f"{type_name} -> {cls} is not a BundleEntry subclass"
+
+
+# ---------------------------------------------------------------------------
+# TestParsedComputedField
+# ---------------------------------------------------------------------------
+class TestParsedComputedField:
+    """Verify each category model populates parsed with expected keys."""
+
+    def test_gun_parsed_keys(self):
+        raw, english = _load_fixture("gun_maplestrike")
+        gun = Gun.from_raw(raw, english, "gun_maplestrike")
+        p = gun.parsed
+        expected = {
+            "slot", "caliber", "firerate", "range", "fire_modes",
+            "hooks", "ammo_min", "ammo_max", "durability",
+            "spread_aim", "spread_angle", "damage",
+        }
+        assert set(p.keys()) == expected
+        assert p["damage"] is not None
+        assert p["damage"]["player"] == 40
+
+    def test_melee_parsed_keys(self):
+        raw, english = _load_fixture("melee_katana")
+        melee = MeleeWeapon.from_raw(raw, english, "melee_katana")
+        p = melee.parsed
+        expected = {"slot", "range", "strength", "stamina", "durability", "damage"}
+        assert set(p.keys()) == expected
+        assert p["damage"]["player"] == 50
+
+    def test_consumeable_parsed_keys(self):
+        raw, english = _load_fixture("food_beans")
+        food = Consumeable.from_raw(raw, english, "food_beans")
+        p = food.parsed
+        assert "consumable" in p
+        assert p["consumable"] is not None
+        assert p["consumable"]["food"] == 55
+
+    def test_clothing_parsed_keys(self):
+        raw, english = _load_fixture("backpack_alice")
+        clothing = Clothing.from_raw(raw, english, "backpack_alice")
+        p = clothing.parsed
+        assert "armor" in p
+        assert "storage" in p
+        assert p["storage"]["width"] == 8
+        assert p["storage"]["height"] == 7
+
+    def test_throwable_parsed_keys(self):
+        throwable = Throwable(
+            type="Throwable", id=1, name="Grenade",
+            fuse=2.5, explosion=10.0,
+        )
+        p = throwable.parsed
+        expected = {"fuse", "explosion", "damage"}
+        assert set(p.keys()) == expected
+        assert p["fuse"] == 2.5
+        assert p["damage"] is None
+
+    def test_barricade_parsed_keys(self):
+        raw, english = _load_fixture("barricade_wire")
+        barricade = BarricadeItem.from_raw(raw, english, "barricade_wire")
+        p = barricade.parsed
+        expected = {"health", "range", "build", "storage", "damage"}
+        assert set(p.keys()) == expected
+        assert p["damage"]["player"] == 40
+
+    def test_structure_parsed_keys(self):
+        raw, english = _load_fixture("structure_wall")
+        structure = StructureItem.from_raw(raw, english, "structure_wall")
+        p = structure.parsed
+        expected = {"health", "range", "construct"}
+        assert set(p.keys()) == expected
+        assert p["health"] == 350
+
+    def test_magazine_parsed_keys(self):
+        mag = Magazine(
+            type="Magazine", id=1, name="Test Mag",
+            amount=30, count_min=5, count_max=10,
+        )
+        p = mag.parsed
+        expected = {"amount", "count_min", "count_max"}
+        assert set(p.keys()) == expected
+        assert p["amount"] == 30
+
+    def test_attachment_parsed_empty(self):
+        attachment = Attachment(type="Sight", id=1, name="Red Dot")
+        p = attachment.parsed
+        assert p == {}
+
+    def test_animal_parsed_keys(self):
+        raw, english = _load_fixture("animal_bear")
+        animal = Animal.from_raw(raw, english, "animal_bear")
+        p = animal.parsed
+        expected = {
+            "health", "damage", "speed_run", "speed_walk",
+            "behaviour", "regen", "reward_id", "reward_xp",
+        }
+        assert set(p.keys()) == expected
+        assert p["health"] == 100
+
+    def test_vehicle_parsed_keys(self):
+        raw, english = _load_fixture("vehicle_humvee")
+        vehicle = Vehicle.from_raw(raw, english, "vehicle_humvee")
+        p = vehicle.parsed
+        expected = {
+            "speed_min", "speed_max", "steer_min", "steer_max",
+            "brake", "fuel_min", "fuel_max", "fuel_capacity",
+            "health_min", "health_max", "trunk_x", "trunk_y",
+        }
+        assert set(p.keys()) == expected
+        assert p["speed_max"] == 14
+
+    def test_generic_parsed_empty(self):
+        raw = {"Type": "SomeNewType", "ID": 9999, "Foo": "bar"}
+        english = {"Name": "Mystery Item"}
+        entry = parse_entry(raw, english, "test/path")
+        assert isinstance(entry, GenericEntry)
+        assert entry.parsed == {}
+
+    def test_spawn_table_parsed_keys(self):
+        entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
+        table = SpawnTable(
+            guid="abc", type="Spawn", id=1, name="Test",
+            source_path="Spawns/Test", table_entries=entries,
+        )
+        p = table.parsed
+        assert "table_entries" in p
+        assert len(p["table_entries"]) == 1
+        assert p["table_entries"][0]["ref_type"] == "asset"
+
+    def test_parsed_in_model_dump(self):
+        """parsed field should appear in model_dump() output."""
+        raw, english = _load_fixture("gun_maplestrike")
+        gun = Gun.from_raw(raw, english, "gun_maplestrike")
+        d = gun.model_dump()
+        assert "parsed" in d
+        assert d["parsed"]["slot"] == "Primary"
+        assert d["parsed"]["firerate"] == 5

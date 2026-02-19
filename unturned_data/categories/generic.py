@@ -27,11 +27,6 @@ class GenericEntry(BundleEntry):
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(**{f: getattr(base, f) for f in BundleEntry.model_fields})
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d["raw"] = self.raw
-        return d
-
     @staticmethod
     def markdown_columns() -> list[str]:
         return BundleEntry.markdown_columns()

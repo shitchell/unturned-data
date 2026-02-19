@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import computed_field
+
 from unturned_data.models import BundleEntry
 
 
@@ -48,25 +50,23 @@ class Vehicle(BundleEntry):
             trunk_y=int(raw.get("Trunk_Storage_Y", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "speed_min": self.speed_min,
-                "speed_max": self.speed_max,
-                "steer_min": self.steer_min,
-                "steer_max": self.steer_max,
-                "brake": self.brake,
-                "fuel_min": self.fuel_min,
-                "fuel_max": self.fuel_max,
-                "fuel_capacity": self.fuel_capacity,
-                "health_min": self.health_min,
-                "health_max": self.health_max,
-                "trunk_x": self.trunk_x,
-                "trunk_y": self.trunk_y,
-            }
-        )
-        return d
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        return {
+            "speed_min": self.speed_min,
+            "speed_max": self.speed_max,
+            "steer_min": self.steer_min,
+            "steer_max": self.steer_max,
+            "brake": self.brake,
+            "fuel_min": self.fuel_min,
+            "fuel_max": self.fuel_max,
+            "fuel_capacity": self.fuel_capacity,
+            "health_min": self.health_min,
+            "health_max": self.health_max,
+            "trunk_x": self.trunk_x,
+            "trunk_y": self.trunk_y,
+        }
 
     @staticmethod
     def markdown_columns() -> list[str]:

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import computed_field
+
 from unturned_data.models import BundleEntry
 
 
@@ -40,21 +42,19 @@ class Animal(BundleEntry):
             reward_xp=int(raw.get("Reward_XP", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "health": self.health,
-                "damage": self.damage,
-                "speed_run": self.speed_run,
-                "speed_walk": self.speed_walk,
-                "behaviour": self.behaviour,
-                "regen": self.regen,
-                "reward_id": self.reward_id,
-                "reward_xp": self.reward_xp,
-            }
-        )
-        return d
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        return {
+            "health": self.health,
+            "damage": self.damage,
+            "speed_run": self.speed_run,
+            "speed_walk": self.speed_walk,
+            "behaviour": self.behaviour,
+            "regen": self.regen,
+            "reward_id": self.reward_id,
+            "reward_xp": self.reward_xp,
+        }
 
     @staticmethod
     def markdown_columns() -> list[str]:

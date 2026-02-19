@@ -546,8 +546,10 @@ class SpawnTable(BundleEntry):
 
     table_entries: list[SpawnTableEntry] = []
 
-    def to_dict(self) -> dict[str, Any]:
-        return self.model_dump()
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        return {"table_entries": [e.model_dump() for e in self.table_entries]}
 
 
 # ---------------------------------------------------------------------------

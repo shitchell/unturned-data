@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from pydantic import computed_field
 
 from unturned_data.models import (
     Blueprint,
@@ -79,31 +80,26 @@ class Gun(BundleEntry):
             spread_angle=float(raw.get("Spread_Angle_Degrees", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "slot": self.slot,
-                "caliber": self.caliber,
-                "firerate": self.firerate,
-                "range": self.range,
-                "fire_modes": self.fire_modes,
-                "hooks": self.hooks,
-                "ammo_min": self.ammo_min,
-                "ammo_max": self.ammo_max,
-                "durability": self.durability,
-                "spread_aim": self.spread_aim,
-                "spread_angle": self.spread_angle,
-                "damage": {
-                    "player": self.damage.player,
-                    "zombie": self.damage.zombie,
-                    "animal": self.damage.animal,
-                }
-                if self.damage
-                else None,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        d: dict[str, Any] = {
+            "slot": self.slot,
+            "caliber": self.caliber,
+            "firerate": self.firerate,
+            "range": self.range,
+            "fire_modes": self.fire_modes,
+            "hooks": self.hooks,
+            "ammo_min": self.ammo_min,
+            "ammo_max": self.ammo_max,
+            "durability": self.durability,
+            "spread_aim": self.spread_aim,
+            "spread_angle": self.spread_angle,
+        }
+        if self.damage:
+            d["damage"] = self.damage.model_dump()
+        else:
+            d["damage"] = None
         return d
 
     @staticmethod
@@ -179,25 +175,20 @@ class MeleeWeapon(BundleEntry):
             durability=float(raw.get("Durability", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "slot": self.slot,
-                "range": self.range,
-                "strength": self.strength,
-                "stamina": self.stamina,
-                "durability": self.durability,
-                "damage": {
-                    "player": self.damage.player,
-                    "zombie": self.damage.zombie,
-                    "animal": self.damage.animal,
-                }
-                if self.damage
-                else None,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        d: dict[str, Any] = {
+            "slot": self.slot,
+            "range": self.range,
+            "strength": self.strength,
+            "stamina": self.stamina,
+            "durability": self.durability,
+        }
+        if self.damage:
+            d["damage"] = self.damage.model_dump()
+        else:
+            d["damage"] = None
         return d
 
     @staticmethod
@@ -257,24 +248,12 @@ class Consumeable(BundleEntry):
 
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "consumable": {
-                    "health": self.consumable.health,
-                    "food": self.consumable.food,
-                    "water": self.consumable.water,
-                    "virus": self.consumable.virus,
-                    "vision": self.consumable.vision,
-                    "bleeding_modifier": self.consumable.bleeding_modifier,
-                }
-                if self.consumable
-                else None,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
-        return d
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        if self.consumable:
+            return {"consumable": self.consumable.model_dump()}
+        return {"consumable": None}
 
     @staticmethod
     def markdown_columns() -> list[str]:
@@ -347,20 +326,14 @@ class Clothing(BundleEntry):
             armor=float(raw.get("Armor", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "storage": {
-                    "width": self.storage.width,
-                    "height": self.storage.height,
-                }
-                if self.storage
-                else None,
-                "armor": self.armor,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        d: dict[str, Any] = {"armor": self.armor}
+        if self.storage:
+            d["storage"] = self.storage.model_dump()
+        else:
+            d["storage"] = None
         return d
 
     @staticmethod
@@ -419,22 +392,17 @@ class Throwable(BundleEntry):
             explosion=float(raw.get("Explosion", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "fuse": self.fuse,
-                "explosion": self.explosion,
-                "damage": {
-                    "player": self.damage.player,
-                    "zombie": self.damage.zombie,
-                    "animal": self.damage.animal,
-                }
-                if self.damage
-                else None,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        d: dict[str, Any] = {
+            "fuse": self.fuse,
+            "explosion": self.explosion,
+        }
+        if self.damage:
+            d["damage"] = self.damage.model_dump()
+        else:
+            d["damage"] = None
         return d
 
     @staticmethod
@@ -498,29 +466,22 @@ class BarricadeItem(BundleEntry):
             build=str(raw.get("Build", "")),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "health": self.health,
-                "range": self.range,
-                "build": self.build,
-                "storage": {
-                    "width": self.storage.width,
-                    "height": self.storage.height,
-                }
-                if self.storage
-                else None,
-                "damage": {
-                    "player": self.damage.player,
-                    "zombie": self.damage.zombie,
-                    "animal": self.damage.animal,
-                }
-                if self.damage
-                else None,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        d: dict[str, Any] = {
+            "health": self.health,
+            "range": self.range,
+            "build": self.build,
+        }
+        if self.storage:
+            d["storage"] = self.storage.model_dump()
+        else:
+            d["storage"] = None
+        if self.damage:
+            d["damage"] = self.damage.model_dump()
+        else:
+            d["damage"] = None
         return d
 
     @staticmethod
@@ -587,17 +548,14 @@ class StructureItem(BundleEntry):
             construct=str(raw.get("Construct", "")),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "health": self.health,
-                "range": self.range,
-                "construct": self.construct,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
-        return d
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        return {
+            "health": self.health,
+            "range": self.range,
+            "construct": self.construct,
+        }
 
     @staticmethod
     def markdown_columns() -> list[str]:
@@ -652,17 +610,14 @@ class Magazine(BundleEntry):
             count_max=int(raw.get("Count_Max", 0)),
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d.update(
-            {
-                "amount": self.amount,
-                "count_min": self.count_min,
-                "count_max": self.count_max,
-                "blueprints_count": len(self.blueprints),
-            }
-        )
-        return d
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        return {
+            "amount": self.amount,
+            "count_min": self.count_min,
+            "count_max": self.count_max,
+        }
 
     @staticmethod
     def markdown_columns() -> list[str]:
@@ -709,11 +664,6 @@ class Attachment(BundleEntry):
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
 
         )
-
-    def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d["blueprints_count"] = len(self.blueprints)
-        return d
 
     @staticmethod
     def markdown_columns() -> list[str]:

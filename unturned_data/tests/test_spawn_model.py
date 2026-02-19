@@ -52,6 +52,6 @@ class TestSpawnTable:
             source_path="Spawns/Test", table_entries=entries,
         )
         d = table.to_dict()
-        assert d["table_entries"] == [
+        assert d["parsed"]["table_entries"] == [
             {"ref_type": "asset", "ref_id": 42, "ref_guid": "", "weight": 10}
         ]
