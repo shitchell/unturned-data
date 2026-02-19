@@ -8,7 +8,6 @@ Handles three .dat format variants:
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from unturned_data.models import BundleEntry, SpawnTable, SpawnTableEntry
@@ -68,7 +67,6 @@ def _parse_modern_tables(tables_list: list[Any]) -> list[SpawnTableEntry]:
     return entries
 
 
-@dataclass
 class SpawnTableCategory(SpawnTable):
     """Spawn table parsed from a .dat file."""
 
@@ -91,6 +89,6 @@ class SpawnTableCategory(SpawnTable):
             table_entries = []
 
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             table_entries=table_entries,
         )

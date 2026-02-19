@@ -17,6 +17,8 @@ from unturned_data.models import (
     ConsumableStats,
     CraftingBlacklist,
     DamageStats,
+    SpawnTable,
+    SpawnTableEntry,
     StorageStats,
 )
 
@@ -362,3 +364,130 @@ class TestCraftingBlacklist:
     def test_merge_empty_list(self):
         merged = CraftingBlacklist.merge([])
         assert merged.allow_core_blueprints is True
+
+
+# ---------------------------------------------------------------------------
+# TestBundleEntrySchemaC
+# ---------------------------------------------------------------------------
+class TestBundleEntrySchemaC:
+    """Tests for Schema C output shape from model_dump()."""
+
+    def test_schema_c_keys_present(self):
+        """model_dump() should include all Schema C top-level keys."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        d = entry.model_dump()
+        expected_keys = {
+            "guid", "type", "id", "name", "description",
+            "rarity", "size_x", "size_y", "source_path",
+            "english", "raw", "blueprints", "category", "parsed",
+        }
+        assert expected_keys == set(d.keys())
+
+    def test_schema_c_category_computed(self):
+        """category computed_field should appear in model_dump()."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        d = entry.model_dump()
+        assert d["category"] == ["Items", "Food"]
+
+    def test_schema_c_parsed_empty_for_base(self):
+        """Base BundleEntry parsed should be empty dict."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        d = entry.model_dump()
+        assert d["parsed"] == {}
+
+    def test_schema_c_english_stored(self):
+        """english field should contain the full English.dat dict."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        d = entry.model_dump()
+        assert d["english"]["Name"] == "Canned Beans"
+
+    def test_schema_c_raw_stored(self):
+        """raw field should contain the full .dat dict."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        d = entry.model_dump()
+        assert d["raw"]["Type"] == "Food"
+
+    def test_schema_c_blueprints_serialized(self):
+        """blueprints should serialize to list in model_dump()."""
+        raw, english = _load_fixture("gun_maplestrike")
+        entry = BundleEntry.from_raw(raw, english, "gun_maplestrike")
+        d = entry.model_dump()
+        assert isinstance(d["blueprints"], list)
+        assert len(d["blueprints"]) == 2
+
+    def test_schema_c_empty_source_path(self):
+        """Empty source_path should produce empty category."""
+        entry = BundleEntry(guid="abc", type="Test", source_path="")
+        d = entry.model_dump()
+        assert d["category"] == []
+
+    def test_schema_c_single_segment_path(self):
+        """Single segment source_path should produce empty category."""
+        entry = BundleEntry(guid="abc", type="Test", source_path="Animals")
+        d = entry.model_dump()
+        assert d["category"] == []
+
+    def test_model_dump_equals_to_dict(self):
+        """to_dict() should return the same as model_dump() for base class."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        assert entry.to_dict() == entry.model_dump()
+
+    def test_category_parts_backward_compat(self):
+        """category_parts property should still work as alias."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
+        assert entry.category_parts == ["Items", "Food"]
+        assert entry.category_parts == entry.category
+
+
+# ---------------------------------------------------------------------------
+# TestSpawnTableSchemaC
+# ---------------------------------------------------------------------------
+class TestSpawnTableSchemaC:
+    """Tests for SpawnTable and SpawnTableEntry Pydantic models."""
+
+    def test_spawn_table_entry_model_dump(self):
+        e = SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)
+        d = e.model_dump()
+        assert d == {"ref_type": "asset", "ref_id": 42, "ref_guid": "", "weight": 10}
+
+    def test_spawn_table_model_dump(self):
+        from unturned_data.models import SpawnTable, SpawnTableEntry
+        entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
+        table = SpawnTable(
+            guid="abc", type="Spawn", id=1, name="Test",
+            source_path="Spawns/Test", table_entries=entries,
+        )
+        d = table.model_dump()
+        assert "table_entries" in d
+        assert d["table_entries"][0]["ref_type"] == "asset"
+        assert "category" in d
+        assert d["category"] == ["Spawns"]
+
+
+# ---------------------------------------------------------------------------
+# TestCraftingBlacklistPydantic
+# ---------------------------------------------------------------------------
+class TestCraftingBlacklistPydantic:
+    """Tests for CraftingBlacklist as Pydantic BaseModel."""
+
+    def test_model_dump_preserves_sets(self):
+        """model_dump() preserves sets; model_dump(mode='json') converts to lists."""
+        bl = CraftingBlacklist(
+            blocked_inputs={"guid-a", "guid-b"},
+            blocked_outputs={"guid-c"},
+        )
+        d = bl.model_dump()
+        assert d["blocked_inputs"] == {"guid-a", "guid-b"}
+        assert d["blocked_outputs"] == {"guid-c"}
+
+        # JSON mode converts sets to lists (for JSON serialization)
+        dj = bl.model_dump(mode="json")
+        assert isinstance(dj["blocked_inputs"], list)
+        assert set(dj["blocked_inputs"]) == {"guid-a", "guid-b"}

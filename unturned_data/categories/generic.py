@@ -6,13 +6,11 @@ Preserves the full raw dict for inspection.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any
 
 from unturned_data.models import BundleEntry
 
 
-@dataclass
 class GenericEntry(BundleEntry):
     """Fallback for any Type not in the registry.
 
@@ -27,7 +25,7 @@ class GenericEntry(BundleEntry):
         source_path: str,
     ) -> GenericEntry:
         base = BundleEntry.from_raw(raw, english, source_path)
-        return cls(**{k: v for k, v in base.__dict__.items()})
+        return cls(**{f: getattr(base, f) for f in BundleEntry.model_fields})
 
     def to_dict(self) -> dict[str, Any]:
         d = super().to_dict()

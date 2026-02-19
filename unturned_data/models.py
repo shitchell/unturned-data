@@ -1,8 +1,8 @@
 """
-Shared dataclasses for Unturned bundle data.
+Shared models for Unturned bundle data.
 
-Provides base BundleEntry and composable stat blocks (DamageStats,
-ConsumableStats, StorageStats, Blueprint) that category-specific
+Provides base BundleEntry (Pydantic BaseModel) and composable stat blocks
+(DamageStats, ConsumableStats, StorageStats, Blueprint) that category-specific
 models will reuse.
 """
 from __future__ import annotations
@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, computed_field
 
 
 # ---------------------------------------------------------------------------
@@ -426,11 +428,12 @@ def format_blueprint_workstations(
 
 
 # ---------------------------------------------------------------------------
-# BundleEntry (base)
+# BundleEntry (base) -- Pydantic BaseModel
 # ---------------------------------------------------------------------------
-@dataclass
-class BundleEntry:
+class BundleEntry(BaseModel):
     """Base entry parsed from a bundle directory."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     guid: str = ""
     type: str = ""
@@ -441,11 +444,13 @@ class BundleEntry:
     size_x: int = 0
     size_y: int = 0
     source_path: str = ""
-    raw: dict[str, Any] = field(default_factory=dict)
-    blueprints: list[Blueprint] = field(default_factory=list)
+    raw: dict[str, Any] = {}
+    english: dict[str, str] = {}
+    blueprints: list[Blueprint] = []
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    def category_parts(self) -> list[str]:
+    def category(self) -> list[str]:
         """Directory path segments excluding the entry's own directory.
 
         For ``source_path="Items/Backpacks/Alicepack"`` returns
@@ -456,6 +461,22 @@ class BundleEntry:
         parts = self.source_path.split("/")
         return parts[:-1] if len(parts) > 1 else []
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def parsed(self) -> dict[str, Any]:
+        """Parsed category-specific data. Base returns empty dict.
+
+        Subclasses will override to return their parsed fields.
+        """
+        return {}
+
+    # Keep category_parts as an alias for backward compatibility with
+    # formatters that haven't been updated yet.
+    @property
+    def category_parts(self) -> list[str]:
+        """Deprecated alias for ``category``."""
+        return self.category
+
     @classmethod
     def from_raw(
         cls,
@@ -464,7 +485,7 @@ class BundleEntry:
         source_path: str,
     ) -> BundleEntry:
         """Build a BundleEntry from parsed .dat and English.dat dicts."""
-        # Fallback name: directory name with underscores → spaces
+        # Fallback name: directory name with underscores -> spaces
         name = english.get("Name", "")
         if not name and source_path:
             dir_name = source_path.rsplit("/", 1)[-1]
@@ -481,23 +502,13 @@ class BundleEntry:
             size_y=int(raw.get("Size_Y", 0)),
             source_path=source_path,
             raw=raw,
+            english=english,
             blueprints=Blueprint.list_from_raw(raw),
         )
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize to a plain dict for JSON output."""
-        return {
-            "guid": self.guid,
-            "type": self.type,
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "rarity": self.rarity,
-            "size_x": self.size_x,
-            "size_y": self.size_y,
-            "category": self.category_parts,
-            "source_path": self.source_path,
-        }
+        """Serialize to a plain dict for JSON output (Schema C shape)."""
+        return self.model_dump()
 
     @staticmethod
     def markdown_columns() -> list[str]:
@@ -522,8 +533,7 @@ class BundleEntry:
 # ---------------------------------------------------------------------------
 # SpawnTableEntry
 # ---------------------------------------------------------------------------
-@dataclass
-class SpawnTableEntry:
+class SpawnTableEntry(BaseModel):
     """A single entry in a spawn table."""
 
     ref_type: str = ""  # "asset", "spawn", or "guid"
@@ -532,39 +542,30 @@ class SpawnTableEntry:
     weight: int = 10
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "ref_type": self.ref_type,
-            "ref_id": self.ref_id,
-            "ref_guid": self.ref_guid,
-            "weight": self.weight,
-        }
+        return self.model_dump()
 
 
 # ---------------------------------------------------------------------------
 # SpawnTable
 # ---------------------------------------------------------------------------
-@dataclass
 class SpawnTable(BundleEntry):
     """A spawn table entry that references items or other spawn tables."""
 
-    table_entries: list[SpawnTableEntry] = field(default_factory=list)
+    table_entries: list[SpawnTableEntry] = []
 
     def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
-        d["table_entries"] = [e.to_dict() for e in self.table_entries]
-        return d
+        return self.model_dump()
 
 
 # ---------------------------------------------------------------------------
 # CraftingBlacklist
 # ---------------------------------------------------------------------------
-@dataclass
-class CraftingBlacklist:
+class CraftingBlacklist(BaseModel):
     """Per-map crafting restrictions parsed from CraftingBlacklistAsset."""
 
     allow_core_blueprints: bool = True
-    blocked_inputs: set[str] = field(default_factory=set)
-    blocked_outputs: set[str] = field(default_factory=set)
+    blocked_inputs: set[str] = set()
+    blocked_outputs: set[str] = set()
 
     @classmethod
     def merge(cls, blacklists: list[CraftingBlacklist]) -> CraftingBlacklist:

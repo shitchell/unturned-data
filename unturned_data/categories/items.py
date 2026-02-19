@@ -6,8 +6,9 @@ BarricadeItem, StructureItem, Magazine, Attachment.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any
+
+from pydantic import ConfigDict
 
 from unturned_data.models import (
     Blueprint,
@@ -23,9 +24,10 @@ from unturned_data.models import (
 # ---------------------------------------------------------------------------
 # Gun
 # ---------------------------------------------------------------------------
-@dataclass
 class Gun(BundleEntry):
     """Firearm (Type=Gun)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -33,8 +35,8 @@ class Gun(BundleEntry):
     caliber: int = 0
     firerate: int = 0
     range: float = 0
-    fire_modes: list[str] = field(default_factory=list)
-    hooks: list[str] = field(default_factory=list)
+    fire_modes: list[str] = []
+    hooks: list[str] = []
     ammo_min: int = 0
     ammo_max: int = 0
     durability: float = 0
@@ -63,7 +65,7 @@ class Gun(BundleEntry):
                 hooks.append(key[5:])  # strip "Hook_" prefix
 
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
 
             slot=str(raw.get("Slot", "")),
@@ -148,9 +150,10 @@ class Gun(BundleEntry):
 # ---------------------------------------------------------------------------
 # MeleeWeapon
 # ---------------------------------------------------------------------------
-@dataclass
 class MeleeWeapon(BundleEntry):
     """Melee weapon (Type=Melee)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -169,7 +172,7 @@ class MeleeWeapon(BundleEntry):
     ) -> MeleeWeapon:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
 
             slot=str(raw.get("Slot", "")),
@@ -236,9 +239,10 @@ class MeleeWeapon(BundleEntry):
 # ---------------------------------------------------------------------------
 # Consumeable
 # ---------------------------------------------------------------------------
-@dataclass
 class Consumeable(BundleEntry):
     """Consumable item (Type=Food, Water, Medical)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     consumable: ConsumableStats | None = None
 
@@ -252,7 +256,7 @@ class Consumeable(BundleEntry):
     ) -> Consumeable:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             consumable=ConsumableStats.from_raw(raw),
 
         )
@@ -324,9 +328,10 @@ class Consumeable(BundleEntry):
 # ---------------------------------------------------------------------------
 # Clothing
 # ---------------------------------------------------------------------------
-@dataclass
 class Clothing(BundleEntry):
     """Clothing item (Type=Shirt, Pants, Hat, Vest, Backpack, Mask, Glasses)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     storage: StorageStats | None = None
 
@@ -341,7 +346,7 @@ class Clothing(BundleEntry):
     ) -> Clothing:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             storage=StorageStats.from_raw(raw),
 
             armor=float(raw.get("Armor", 0)),
@@ -394,9 +399,10 @@ class Clothing(BundleEntry):
 # ---------------------------------------------------------------------------
 # Throwable
 # ---------------------------------------------------------------------------
-@dataclass
 class Throwable(BundleEntry):
     """Throwable item (Type=Throwable)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -412,7 +418,7 @@ class Throwable(BundleEntry):
     ) -> Throwable:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
 
             fuse=float(raw.get("Fuse", 0)),
@@ -469,9 +475,10 @@ class Throwable(BundleEntry):
 # ---------------------------------------------------------------------------
 # BarricadeItem
 # ---------------------------------------------------------------------------
-@dataclass
 class BarricadeItem(BundleEntry):
     """Barricade-type item (Type=Barricade, Trap, Storage, Sentry, Generator, Beacon, Oil_Pump)."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
     storage: StorageStats | None = None
@@ -489,7 +496,7 @@ class BarricadeItem(BundleEntry):
     ) -> BarricadeItem:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
             storage=StorageStats.from_raw(raw),
 
@@ -563,7 +570,6 @@ class BarricadeItem(BundleEntry):
 # ---------------------------------------------------------------------------
 # StructureItem
 # ---------------------------------------------------------------------------
-@dataclass
 class StructureItem(BundleEntry):
     """Structure item (Type=Structure)."""
 
@@ -581,7 +587,7 @@ class StructureItem(BundleEntry):
     ) -> StructureItem:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
 
             health=float(raw.get("Health", 0)),
             range=float(raw.get("Range", 0)),
@@ -629,7 +635,6 @@ class StructureItem(BundleEntry):
 # ---------------------------------------------------------------------------
 # Magazine
 # ---------------------------------------------------------------------------
-@dataclass
 class Magazine(BundleEntry):
     """Magazine item (Type=Magazine)."""
 
@@ -647,7 +652,7 @@ class Magazine(BundleEntry):
     ) -> Magazine:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
 
             amount=int(raw.get("Amount", 0)),
             count_min=int(raw.get("Count_Min", 0)),
@@ -694,7 +699,6 @@ class Magazine(BundleEntry):
 # ---------------------------------------------------------------------------
 # Attachment
 # ---------------------------------------------------------------------------
-@dataclass
 class Attachment(BundleEntry):
     """Attachment item (Type=Sight, Grip, Barrel, Tactical)."""
 
@@ -709,7 +713,7 @@ class Attachment(BundleEntry):
     ) -> Attachment:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
 
         )
 

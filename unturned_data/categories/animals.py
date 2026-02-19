@@ -3,13 +3,11 @@ Category model for Unturned animals.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from unturned_data.models import BundleEntry
 
 
-@dataclass
 class Animal(BundleEntry):
     """Animal entry (Type=Animal)."""
 
@@ -31,7 +29,7 @@ class Animal(BundleEntry):
     ) -> Animal:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             health=float(raw.get("Health", 0)),
             damage=float(raw.get("Damage", 0)),
             speed_run=float(raw.get("Speed_Run", 0)),

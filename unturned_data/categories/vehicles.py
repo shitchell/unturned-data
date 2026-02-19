@@ -3,13 +3,11 @@ Category model for Unturned vehicles.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from unturned_data.models import BundleEntry
 
 
-@dataclass
 class Vehicle(BundleEntry):
     """Vehicle entry (Type=Vehicle)."""
 
@@ -35,7 +33,7 @@ class Vehicle(BundleEntry):
     ) -> Vehicle:
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
-            **{k: v for k, v in base.__dict__.items()},
+            **{f: getattr(base, f) for f in BundleEntry.model_fields},
             speed_min=float(raw.get("Speed_Min", 0)),
             speed_max=float(raw.get("Speed_Max", 0)),
             steer_min=float(raw.get("Steer_Min", 0)),
