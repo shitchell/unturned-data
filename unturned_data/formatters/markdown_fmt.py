@@ -5,6 +5,7 @@ Organizes entries by directory hierarchy, using heading levels that
 mirror the folder structure.  Within each directory node, entries are
 grouped by model class so each group uses appropriate columns.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -67,19 +68,21 @@ def _escape_pipe(value: str) -> str:
 # Tree structure for directory hierarchy
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class _TreeNode:
     """A node in the directory tree."""
+
     entries: list[BundleEntry] = field(default_factory=list)
     children: dict[str, "_TreeNode"] = field(default_factory=dict)
 
 
 def _build_tree(entries: list[BundleEntry]) -> _TreeNode:
-    """Build a tree from entries based on their category_parts."""
+    """Build a tree from entries based on their category."""
     root = _TreeNode()
     for entry in entries:
         node = root
-        for part in entry.category_parts:
+        for part in entry.category:
             if part not in node.children:
                 node.children[part] = _TreeNode()
             node = node.children[part]

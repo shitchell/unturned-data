@@ -19,6 +19,7 @@ Example structure::
       }
     }
 """
+
 from __future__ import annotations
 
 import json
@@ -30,7 +31,7 @@ from unturned_data.models import BundleEntry
 def entries_to_json(entries: list[BundleEntry], indent: int = 2) -> str:
     """Convert entries to a nested JSON string.
 
-    Entries are placed into a tree based on their ``category_parts``
+    Entries are placed into a tree based on their ``category``
     (derived from ``source_path``).  Within each ``_entries`` array,
     entries are sorted by ``(name, id)`` for deterministic output.
     """
@@ -40,7 +41,7 @@ def entries_to_json(entries: list[BundleEntry], indent: int = 2) -> str:
     tree: dict[str, Any] = {}
 
     for entry in entries:
-        parts = entry.category_parts
+        parts = entry.category
         node = tree
         for part in parts:
             if part not in node:
@@ -48,7 +49,7 @@ def entries_to_json(entries: list[BundleEntry], indent: int = 2) -> str:
             node = node[part]
         if "_entries" not in node:
             node["_entries"] = []
-        node["_entries"].append(entry.to_dict())
+        node["_entries"].append(entry.model_dump())
 
     # Sort _entries arrays at every level
     _sort_entries(tree)
