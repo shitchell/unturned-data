@@ -19,7 +19,7 @@ from unturned_data.models import BundleEntry
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        prog="unturned-data",
+        prog="unturnedd",
         description="Parse Unturned server data and export as JSON or markdown.",
     )
     parser.add_argument(
