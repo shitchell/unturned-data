@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import ConfigDict
 
 from unturned_data.models import (
     Blueprint,
@@ -27,7 +26,6 @@ from unturned_data.models import (
 class Gun(BundleEntry):
     """Firearm (Type=Gun)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -153,7 +151,6 @@ class Gun(BundleEntry):
 class MeleeWeapon(BundleEntry):
     """Melee weapon (Type=Melee)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -242,7 +239,6 @@ class MeleeWeapon(BundleEntry):
 class Consumeable(BundleEntry):
     """Consumable item (Type=Food, Water, Medical)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     consumable: ConsumableStats | None = None
 
@@ -331,7 +327,6 @@ class Consumeable(BundleEntry):
 class Clothing(BundleEntry):
     """Clothing item (Type=Shirt, Pants, Hat, Vest, Backpack, Mask, Glasses)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     storage: StorageStats | None = None
 
@@ -402,7 +397,6 @@ class Clothing(BundleEntry):
 class Throwable(BundleEntry):
     """Throwable item (Type=Throwable)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
 
@@ -478,7 +472,6 @@ class Throwable(BundleEntry):
 class BarricadeItem(BundleEntry):
     """Barricade-type item (Type=Barricade, Trap, Storage, Sentry, Generator, Beacon, Oil_Pump)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     damage: DamageStats | None = None
     storage: StorageStats | None = None

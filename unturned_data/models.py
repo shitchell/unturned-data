@@ -8,10 +8,9 @@ models will reuse.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, computed_field
 
 
 # ---------------------------------------------------------------------------
@@ -129,18 +128,17 @@ class StorageStats(BaseModel):
 # ---------------------------------------------------------------------------
 # Blueprint
 # ---------------------------------------------------------------------------
-@dataclass
-class Blueprint:
+class Blueprint(BaseModel):
     """A single crafting blueprint."""
 
     name: str = ""
     category_tag: str = ""
     operation: str = ""
-    inputs: list[Any] = field(default_factory=list)
-    outputs: list[Any] = field(default_factory=list)
+    inputs: list[Any] = []
+    outputs: list[Any] = []
     skill: str = ""
     skill_level: int = 0
-    workstation_tags: list[str] = field(default_factory=list)
+    workstation_tags: list[str] = []
 
     @staticmethod
     def list_from_raw(raw: dict[str, Any]) -> list[Blueprint]:
@@ -429,8 +427,6 @@ def format_blueprint_workstations(
 # ---------------------------------------------------------------------------
 class BundleEntry(BaseModel):
     """Base entry parsed from a bundle directory."""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     guid: str = ""
     type: str = ""
