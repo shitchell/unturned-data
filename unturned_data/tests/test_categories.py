@@ -109,10 +109,10 @@ class TestGun:
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         assert len(gun.markdown_row({})) == len(Gun.markdown_columns())
 
-    def test_to_dict(self):
+    def test_model_dump(self):
         raw, english = _load_fixture("gun_maplestrike")
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
-        d = gun.to_dict()
+        d = gun.model_dump()
         assert d["parsed"]["slot"] == "Primary"
         assert d["parsed"]["firerate"] == 5
         assert d["parsed"]["range"] == 200
@@ -412,10 +412,10 @@ class TestVehicle:
         vehicle = Vehicle.from_raw(raw, english, "vehicle_humvee")
         assert len(vehicle.markdown_row({})) == len(Vehicle.markdown_columns())
 
-    def test_to_dict(self):
+    def test_model_dump(self):
         raw, english = _load_fixture("vehicle_humvee")
         vehicle = Vehicle.from_raw(raw, english, "vehicle_humvee")
-        d = vehicle.to_dict()
+        d = vehicle.model_dump()
         assert d["parsed"]["speed_max"] == 14
         assert d["parsed"]["fuel_capacity"] == 2000
         assert d["parsed"]["trunk_x"] == 6
@@ -474,10 +474,10 @@ class TestAnimal:
         animal = Animal.from_raw(raw, english, "animal_bear")
         assert len(animal.markdown_row({})) == len(Animal.markdown_columns())
 
-    def test_to_dict(self):
+    def test_model_dump(self):
         raw, english = _load_fixture("animal_bear")
         animal = Animal.from_raw(raw, english, "animal_bear")
-        d = animal.to_dict()
+        d = animal.model_dump()
         assert d["parsed"]["health"] == 100
         assert d["parsed"]["damage"] == 20
         assert d["parsed"]["behaviour"] == "Offense"
@@ -516,11 +516,11 @@ class TestGenericEntry:
         assert entry.name == "Mystery Item"
         assert entry.description == "What is this?"
 
-    def test_to_dict_includes_raw(self):
+    def test_model_dump_includes_raw(self):
         raw = {"Type": "SomeNewType", "ID": 9999, "Foo": "bar"}
         english = {"Name": "Mystery Item"}
         entry = parse_entry(raw, english, "test/path")
-        d = entry.to_dict()
+        d = entry.model_dump()
         assert "raw" in d
         assert d["raw"]["Foo"] == "bar"
 

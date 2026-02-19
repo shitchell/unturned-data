@@ -45,13 +45,13 @@ class TestSpawnTable:
         assert len(table.table_entries) == 2
         assert table.table_entries[0].ref_type == "asset"
 
-    def test_to_dict(self):
+    def test_model_dump(self):
         entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
         table = SpawnTable(
             guid="abc", type="Spawn", id=1, name="Test",
             source_path="Spawns/Test", table_entries=entries,
         )
-        d = table.to_dict()
+        d = table.model_dump()
         assert d["parsed"]["table_entries"] == [
             {"ref_type": "asset", "ref_id": 42, "ref_guid": "", "weight": 10}
         ]

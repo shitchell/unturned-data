@@ -299,10 +299,10 @@ class TestBundleEntry:
         assert entry.size_y == 2
         assert entry.source_path == "gun_maplestrike"
 
-    def test_to_dict(self):
+    def test_model_dump(self):
         raw, english = _load_fixture("food_beans")
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
-        d = entry.to_dict()
+        d = entry.model_dump()
         assert isinstance(d, dict)
         assert d["guid"] == "78fefdd23def4ab6ac8301adfcc3b2d4"
         assert d["name"] == "Canned Beans"
@@ -432,18 +432,6 @@ class TestBundleEntrySchemaC:
         d = entry.model_dump()
         assert d["category"] == []
 
-    def test_model_dump_equals_to_dict(self):
-        """to_dict() should return the same as model_dump() for base class."""
-        raw, english = _load_fixture("food_beans")
-        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
-        assert entry.to_dict() == entry.model_dump()
-
-    def test_category_parts_backward_compat(self):
-        """category_parts property should still work as alias."""
-        raw, english = _load_fixture("food_beans")
-        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
-        assert entry.category_parts == ["Items", "Food"]
-        assert entry.category_parts == entry.category
 
 
 # ---------------------------------------------------------------------------

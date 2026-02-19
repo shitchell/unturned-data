@@ -463,13 +463,6 @@ class BundleEntry(BaseModel):
         """
         return {}
 
-    # Keep category_parts as an alias for backward compatibility with
-    # formatters that haven't been updated yet.
-    @property
-    def category_parts(self) -> list[str]:
-        """Deprecated alias for ``category``."""
-        return self.category
-
     @classmethod
     def from_raw(
         cls,
@@ -498,10 +491,6 @@ class BundleEntry(BaseModel):
             english=english,
             blueprints=Blueprint.list_from_raw(raw),
         )
-
-    def to_dict(self) -> dict[str, Any]:
-        """Serialize to a plain dict for JSON output (Schema C shape)."""
-        return self.model_dump()
 
     @staticmethod
     def markdown_columns() -> list[str]:
@@ -534,8 +523,6 @@ class SpawnTableEntry(BaseModel):
     ref_guid: str = ""
     weight: int = 10
 
-    def to_dict(self) -> dict[str, Any]:
-        return self.model_dump()
 
 
 # ---------------------------------------------------------------------------
