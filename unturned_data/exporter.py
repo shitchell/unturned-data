@@ -50,6 +50,52 @@ SCHEMA_C_FIELDS = {
 }
 
 
+def discover_maps(server_root: Path) -> list[Path]:
+    """Auto-discover all map directories in an Unturned server installation.
+
+    Searches:
+    - <server_root>/Maps/*/  (built-in maps)
+    - <server_root>/Servers/*/Workshop/Steam/content/304930/*/*/  (workshop maps)
+
+    A directory is a valid map if it contains Spawns/, Bundles/, or Config.json.
+    """
+    maps: list[Path] = []
+
+    # Built-in maps
+    builtin_maps = server_root / "Maps"
+    if builtin_maps.is_dir():
+        for candidate in sorted(builtin_maps.iterdir()):
+            if candidate.is_dir() and _is_map_dir(candidate):
+                maps.append(candidate)
+
+    # Workshop maps (Servers/*/Workshop/Steam/content/304930/<workshop_id>/<map_name>/)
+    servers_dir = server_root / "Servers"
+    if servers_dir.is_dir():
+        for server_instance in sorted(servers_dir.iterdir()):
+            workshop_content = (
+                server_instance / "Workshop" / "Steam" / "content" / "304930"
+            )
+            if not workshop_content.is_dir():
+                continue
+            for workshop_id_dir in sorted(workshop_content.iterdir()):
+                if not workshop_id_dir.is_dir():
+                    continue
+                for candidate in sorted(workshop_id_dir.iterdir()):
+                    if candidate.is_dir() and _is_map_dir(candidate):
+                        maps.append(candidate)
+
+    return maps
+
+
+def _is_map_dir(path: Path) -> bool:
+    """Check if a directory looks like an Unturned map."""
+    return (
+        (path / "Spawns").is_dir()
+        or (path / "Bundles").is_dir()
+        or (path / "Config.json").is_file()
+    )
+
+
 def _serialize_entry(entry: BundleEntry) -> dict[str, Any]:
     """Serialize a single entry to Schema C dict (only Schema C fields)."""
     return entry.model_dump(include=SCHEMA_C_FIELDS)

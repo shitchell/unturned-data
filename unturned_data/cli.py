@@ -6,7 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from unturned_data.exporter import export_schema_c
+from unturned_data.exporter import discover_maps, export_schema_c
 from unturned_data.categories import parse_entry
 from unturned_data.loader import (
     collect_comment_guids_from_dir,
@@ -20,9 +20,13 @@ from unturned_data.models import BundleEntry
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="unturned-data",
-        description="Parse Unturned .dat bundle files and export data.",
+        description="Parse Unturned server data and export as JSON or markdown.",
     )
-    parser.add_argument("path", type=Path, help="Path to a Bundles directory")
+    parser.add_argument(
+        "server_root",
+        type=Path,
+        help="Path to the Unturned server root directory (contains Bundles/, Maps/, Servers/)",
+    )
     parser.add_argument(
         "--format",
         "-f",
@@ -41,9 +45,12 @@ def main(argv: list[str] | None = None) -> None:
         "--map",
         action="append",
         default=None,
-        type=Path,
-        metavar="DIR",
-        help="Path to a map directory (repeatable).",
+        metavar="NAME",
+        help=(
+            "Filter to a specific map by name (repeatable). "
+            "If omitted, all discovered maps are included. "
+            "Names are matched case-insensitively against discovered map directory names."
+        ),
     )
     parser.add_argument(
         "--exclude",
@@ -55,43 +62,75 @@ def main(argv: list[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
 
-    bundle_path: Path = args.path.resolve()
-    if not bundle_path.is_dir():
-        print(f"Error: {bundle_path} is not a directory", file=sys.stderr)
+    server_root: Path = args.server_root.resolve()
+    if not server_root.is_dir():
+        print(f"Error: {server_root} is not a directory", file=sys.stderr)
         sys.exit(1)
+
+    # Locate base Bundles directory
+    bundles_path = server_root / "Bundles"
+    if not bundles_path.is_dir():
+        print(
+            f"Error: {bundles_path} not found. Is this an Unturned server root?",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # Auto-discover maps
+    all_maps = discover_maps(server_root)
+
+    # Filter maps by --map flag if provided
+    if args.map:
+        map_names_lower = {m.lower() for m in args.map}
+        selected_maps = [m for m in all_maps if m.name.lower() in map_names_lower]
+        # Warn about unmatched names
+        found_names = {m.name.lower() for m in selected_maps}
+        for name in args.map:
+            if name.lower() not in found_names:
+                print(
+                    f"Warning: map '{name}' not found. Available maps:",
+                    file=sys.stderr,
+                )
+                for m in all_maps:
+                    print(f"  - {m.name}", file=sys.stderr)
+                break
+    else:
+        selected_maps = all_maps
 
     if args.format == "json":
         if not args.output:
             print("Error: --output is required for JSON format", file=sys.stderr)
             sys.exit(1)
         export_schema_c(
-            base_bundles=bundle_path,
-            map_dirs=[m.resolve() for m in (args.map or [])],
+            base_bundles=bundles_path,
+            map_dirs=selected_maps,
             output_dir=args.output.resolve(),
         )
+        map_names_str = ", ".join(m.name for m in selected_maps) or "(none)"
         print(f"Export complete: {args.output}")
+        print(f"Maps: {map_names_str}")
 
     elif args.format == "markdown":
         entries: list[BundleEntry] = []
-        for raw, english, rel_path in walk_bundle_dir(bundle_path):
+        for raw, english, rel_path in walk_bundle_dir(bundles_path):
             if not raw:
                 continue
             if args.exclude and _is_excluded(rel_path, args.exclude):
                 continue
             entries.append(parse_entry(raw, english, rel_path))
 
-        if args.map:
-            for map_dir in args.map:
-                map_bundles = map_dir / "Bundles"
-                if map_bundles.is_dir():
-                    for raw, english, rel_path in walk_bundle_dir(map_bundles):
-                        if not raw:
-                            continue
-                        entries.append(parse_entry(raw, english, rel_path))
+        # Include entries from selected maps
+        for map_dir in selected_maps:
+            map_bundles = map_dir / "Bundles"
+            if map_bundles.is_dir():
+                for raw, english, rel_path in walk_bundle_dir(map_bundles):
+                    if not raw:
+                        continue
+                    entries.append(parse_entry(raw, english, rel_path))
 
         supplementary: dict[str, str] = {}
-        supplementary.update(walk_asset_files(bundle_path))
-        supplementary.update(collect_comment_guids_from_dir(bundle_path))
+        supplementary.update(walk_asset_files(bundles_path))
+        supplementary.update(collect_comment_guids_from_dir(bundles_path))
         print(entries_to_markdown(entries, supplementary_guids=supplementary))
 
 
