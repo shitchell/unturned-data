@@ -1,0 +1,9 @@
+GUID aaaa0000bbbb1111cccc2222dddd3333
+Type Spawn
+ID 99001
+
+Tables 2
+Table_0_Asset_ID 42
+Table_0_Weight 10
+Table_1_Asset_ID 99
+Table_1_Weight 5

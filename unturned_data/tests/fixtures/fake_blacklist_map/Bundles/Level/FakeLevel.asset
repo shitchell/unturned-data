@@ -1,0 +1,12 @@
+"Metadata"
+{
+    "GUID" "aaa00000000000000000000000000001"
+    "Type" "SDG.Unturned.LevelAsset"
+}
+"Asset"
+{
+    "Crafting_Blacklists"
+    [
+        {"GUID" "bbb00000000000000000000000000002"}
+    ]
+}
