@@ -138,6 +138,7 @@ class Blueprint(BaseModel):
     outputs: list[Any] = []
     skill: str = ""
     skill_level: int = 0
+    build: str = ""
     workstation_tags: list[str] = []
 
     @staticmethod
@@ -252,10 +253,18 @@ class Blueprint(BaseModel):
             if not outputs and name == "Craft":
                 outputs = ["this"]
 
+            # Parse skill, skill_level, and build
+            skill = str(raw.get(f"{prefix}Skill", ""))
+            skill_level = int(raw.get(f"{prefix}Level", 0))
+            build = str(raw.get(f"{prefix}Build", ""))
+
             results.append(Blueprint(
                 name=name,
                 inputs=inputs,
                 outputs=outputs,
+                skill=skill,
+                skill_level=skill_level,
+                build=build,
             ))
 
         return results

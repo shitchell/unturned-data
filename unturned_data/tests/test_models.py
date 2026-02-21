@@ -324,6 +324,44 @@ class TestBlueprint:
         assert bps == []
 
 
+class TestBlueprintLegacySkillBuild:
+    def test_extracts_skill(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Skill": "Cook",
+            "Blueprint_0_Level": "2",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].skill == "Cook"
+        assert bps[0].skill_level == 2
+
+    def test_extracts_build(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Build": "Torch",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].build == "Torch"
+
+    def test_defaults_when_missing(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].skill == ""
+        assert bps[0].skill_level == 0
+        assert bps[0].build == ""
+
+
 # ---------------------------------------------------------------------------
 # TestBundleEntry
 # ---------------------------------------------------------------------------
