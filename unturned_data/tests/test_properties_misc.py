@@ -35,7 +35,7 @@ from unturned_data.models.properties.misc import (
 class TestCloudProperties:
     def test_defaults(self):
         props = CloudProperties()
-        assert props.gravity == 0
+        assert props.gravity is None
 
     def test_from_raw(self):
         raw = {"Gravity": "4.5"}
@@ -44,7 +44,7 @@ class TestCloudProperties:
 
     def test_from_raw_empty(self):
         props = CloudProperties.from_raw({})
-        assert props.gravity == 0
+        assert props.gravity is None
 
 
 # ---------------------------------------------------------------------------
@@ -55,9 +55,9 @@ class TestCloudProperties:
 class TestMapProperties:
     def test_defaults(self):
         props = MapProperties()
-        assert props.enables_compass is False
-        assert props.enables_chart is False
-        assert props.enables_map is False
+        assert props.enables_compass is None
+        assert props.enables_chart is None
+        assert props.enables_map is None
 
     def test_from_raw(self):
         raw = {
@@ -73,8 +73,8 @@ class TestMapProperties:
     def test_from_raw_partial(self):
         raw = {"Enables_Map": "true"}
         props = MapProperties.from_raw(raw)
-        assert props.enables_compass is False
-        assert props.enables_chart is False
+        assert props.enables_compass is None
+        assert props.enables_chart is None
         assert props.enables_map is True
 
 
@@ -86,7 +86,7 @@ class TestMapProperties:
 class TestKeyProperties:
     def test_defaults(self):
         props = KeyProperties()
-        assert props.exchange_with_target_item is False
+        assert props.exchange_with_target_item is None
 
     def test_from_raw(self):
         raw = {"Exchange_With_Target_Item": "true"}
@@ -102,7 +102,7 @@ class TestKeyProperties:
 class TestFisherProperties:
     def test_defaults(self):
         props = FisherProperties()
-        assert props.reward_id == 0
+        assert props.reward_id is None
 
     def test_from_raw(self):
         raw = {"Reward_ID": "42"}
@@ -118,7 +118,7 @@ class TestFisherProperties:
 class TestFuelProperties:
     def test_defaults(self):
         props = FuelProperties()
-        assert props.fuel == 0
+        assert props.fuel is None
 
     def test_from_raw(self):
         raw = {"Fuel": "500"}
@@ -134,7 +134,7 @@ class TestFuelProperties:
 class TestOpticProperties:
     def test_defaults(self):
         props = OpticProperties()
-        assert props.zoom == 0
+        assert props.zoom is None
 
     def test_from_raw(self):
         raw = {"Zoom": "2.5"}
@@ -150,11 +150,11 @@ class TestOpticProperties:
 class TestRefillProperties:
     def test_defaults(self):
         props = RefillProperties()
-        assert props.water == 0
-        # Verify all 18 quality/stat fields default to 0
+        assert props.water is None
+        # Verify all 18 quality/stat fields default to None
         for quality in ("clean", "salty", "dirty"):
             for stat in ("health", "food", "water", "virus", "stamina", "oxygen"):
-                assert getattr(props, f"{quality}_{stat}") == 0
+                assert getattr(props, f"{quality}_{stat}") is None
 
     def test_from_raw_all_fields(self):
         raw = {"Water": "10"}
@@ -180,7 +180,7 @@ class TestRefillProperties:
         assert props.water == 5.0
         assert props.clean_health == 10.0
         assert props.dirty_virus == 3.0
-        assert props.salty_food == 0
+        assert props.salty_food is None
 
     def test_field_count(self):
         """RefillProperties should have exactly 19 fields (water + 18 quality/stat)."""
@@ -195,12 +195,12 @@ class TestRefillProperties:
 class TestBoxProperties:
     def test_defaults(self):
         props = BoxProperties()
-        assert props.generate == 0
-        assert props.destroy == 0
-        assert props.drops == 0
-        assert props.item_origin == ""
-        assert props.probability_model == ""
-        assert props.contains_bonus_items is False
+        assert props.generate is None
+        assert props.destroy is None
+        assert props.drops is None
+        assert props.item_origin is None
+        assert props.probability_model is None
+        assert props.contains_bonus_items is None
 
     def test_from_raw(self):
         raw = {
@@ -235,7 +235,7 @@ class TestBoxProperties:
 class TestTireProperties:
     def test_defaults(self):
         props = TireProperties()
-        assert props.mode == ""
+        assert props.mode is None
 
     def test_from_raw(self):
         raw = {"Mode": "Add"}

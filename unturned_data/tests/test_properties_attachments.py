@@ -23,21 +23,21 @@ class TestCaliberProperties:
     """CaliberProperties base defaults and parsing."""
 
     def test_caliber_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = CaliberProperties.from_raw({})
 
         assert props.calibers == []
-        assert props.recoil_x == pytest.approx(1.0)
-        assert props.recoil_y == pytest.approx(1.0)
-        assert props.aiming_recoil_multiplier == pytest.approx(1.0)
-        assert props.spread == pytest.approx(1.0)
-        assert props.sway == pytest.approx(1.0)
-        assert props.shake == pytest.approx(1.0)
-        assert props.damage == pytest.approx(1.0)
-        assert props.firerate == 0
-        assert props.ballistic_damage_multiplier == pytest.approx(0.0)
-        assert props.paintable is False
-        assert props.bipod is False
+        assert props.recoil_x is None
+        assert props.recoil_y is None
+        assert props.aiming_recoil_multiplier is None
+        assert props.spread is None
+        assert props.sway is None
+        assert props.shake is None
+        assert props.damage is None
+        assert props.firerate is None
+        assert props.ballistic_damage_multiplier is None
+        assert props.paintable is None
+        assert props.bipod is None
 
     def test_calibers_list_parsing(self):
         """Calibers count + Caliber_{i} entries are parsed into a list."""
@@ -144,16 +144,16 @@ class TestSightProperties:
     def test_sight_defaults(self):
         props = SightProperties.from_raw({})
 
-        assert props.vision == ""
-        assert props.zoom == 0.0
-        assert props.holographic is False
-        assert props.nightvision_color_r == 0
-        assert props.nightvision_color_g == 0
-        assert props.nightvision_color_b == 0
-        assert props.nightvision_fog_intensity == 0.0
+        assert props.vision is None
+        assert props.zoom is None
+        assert props.holographic is None
+        assert props.nightvision_color_r is None
+        assert props.nightvision_color_g is None
+        assert props.nightvision_color_b is None
+        assert props.nightvision_fog_intensity is None
         # Base defaults inherited
         assert props.calibers == []
-        assert props.recoil_x == pytest.approx(1.0)
+        assert props.recoil_x is None
 
     def test_sight_serializes_flat(self):
         props = SightProperties.from_raw({})
@@ -200,12 +200,12 @@ class TestBarrelProperties:
     def test_barrel_defaults(self):
         props = BarrelProperties.from_raw({})
 
-        assert props.braked is False
-        assert props.silenced is False
-        assert props.volume == pytest.approx(1.0)
-        assert props.durability == 0
-        assert props.ballistic_drop == pytest.approx(1.0)
-        assert props.gunshot_rolloff_distance_multiplier == 0.0
+        assert props.braked is None
+        assert props.silenced is None
+        assert props.volume is None
+        assert props.durability is None
+        assert props.ballistic_drop is None
+        assert props.gunshot_rolloff_distance_multiplier is None
 
 
 # ---------------------------------------------------------------------------
@@ -221,11 +221,11 @@ class TestGripProperties:
         props = GripProperties.from_raw({})
 
         assert props.calibers == []
-        assert props.recoil_x == pytest.approx(1.0)
-        assert props.recoil_y == pytest.approx(1.0)
-        assert props.spread == pytest.approx(1.0)
-        assert props.sway == pytest.approx(1.0)
-        assert props.shake == pytest.approx(1.0)
+        assert props.recoil_x is None
+        assert props.recoil_y is None
+        assert props.spread is None
+        assert props.sway is None
+        assert props.shake is None
 
     def test_grip_from_raw_inherits_base(self):
         raw = {
@@ -289,16 +289,16 @@ class TestTacticalProperties:
     def test_tactical_defaults(self):
         props = TacticalProperties.from_raw({})
 
-        assert props.laser is False
-        assert props.light is False
-        assert props.rangefinder is False
-        assert props.melee is False
-        assert props.spotlight_range == pytest.approx(64.0)
-        assert props.spotlight_angle == pytest.approx(90.0)
-        assert props.spotlight_intensity == pytest.approx(1.3)
-        assert props.spotlight_color_r == 245
-        assert props.spotlight_color_g == 223
-        assert props.spotlight_color_b == 147
+        assert props.laser is None
+        assert props.light is None
+        assert props.rangefinder is None
+        assert props.melee is None
+        assert props.spotlight_range is None
+        assert props.spotlight_angle is None
+        assert props.spotlight_intensity is None
+        assert props.spotlight_color_r is None
+        assert props.spotlight_color_g is None
+        assert props.spotlight_color_b is None
 
 
 # ---------------------------------------------------------------------------
@@ -366,21 +366,21 @@ class TestMagazineProperties:
     def test_magazine_defaults(self):
         props = MagazineProperties.from_raw({})
 
-        assert props.amount == 0
-        assert props.count_min == 0
-        assert props.count_max == 0
-        assert props.pellets == 0
-        assert props.stuck == 0
-        assert props.range == 0.0
-        assert props.speed == 0.0
-        assert props.explosive is False
-        assert props.delete_empty is False
-        assert props.should_fill_after_detach is False
-        assert props.damage_player == 0.0
-        assert props.damage_zombie == 0.0
-        assert props.projectile_damage_multiplier == pytest.approx(1.0)
-        assert props.projectile_blast_radius_multiplier == pytest.approx(1.0)
-        assert props.projectile_launch_force_multiplier == pytest.approx(1.0)
+        assert props.amount is None
+        assert props.count_min is None
+        assert props.count_max is None
+        assert props.pellets is None
+        assert props.stuck is None
+        assert props.range is None
+        assert props.speed is None
+        assert props.explosive is None
+        assert props.delete_empty is None
+        assert props.should_fill_after_detach is None
+        assert props.damage_player is None
+        assert props.damage_zombie is None
+        assert props.projectile_damage_multiplier is None
+        assert props.projectile_blast_radius_multiplier is None
+        assert props.projectile_launch_force_multiplier is None
 
     def test_magazine_consumed_keys_includes_damage_remaps(self):
         raw = {
@@ -397,7 +397,9 @@ class TestMagazineProperties:
         assert MagazineProperties.is_ignored("Tracer") is True
         assert MagazineProperties.is_ignored("Impact") is True
         assert MagazineProperties.is_ignored("Explosion") is True
-        assert MagazineProperties.is_ignored("Spawn_Explosion_On_Dedicated_Server") is True
+        assert (
+            MagazineProperties.is_ignored("Spawn_Explosion_On_Dedicated_Server") is True
+        )
         assert MagazineProperties.is_ignored("Amount") is False
 
     def test_magazine_serializes_flat(self):

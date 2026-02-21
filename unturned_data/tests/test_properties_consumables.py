@@ -38,21 +38,21 @@ class TestFoodProperties:
         assert props.health == 10
         assert props.food == 55
         # Beans don't have water/virus/vision
-        assert props.water == 0
-        assert props.virus == 0
-        assert props.vision == 0
+        assert props.water is None
+        assert props.virus is None
+        assert props.vision is None
 
     def test_food_defaults_correct(self):
         raw, _ = _load_fixture("food_beans")
         props = ConsumableProperties.from_raw(raw)
 
         # Beans have no combat or status effect properties
-        assert props.bleeding is False
-        assert props.broken is False
-        assert props.aid is False
-        assert props.should_delete_after_use is True
-        assert props.damage_player == 0
-        assert props.range == 0
+        assert props.bleeding is None
+        assert props.broken is None
+        assert props.aid is None
+        assert props.should_delete_after_use is None
+        assert props.damage_player is None
+        assert props.range is None
 
 
 # ---------------------------------------------------------------------------
@@ -75,8 +75,8 @@ class TestMedicalProperties:
         raw, _ = _load_fixture("medical_bandage")
         props = ConsumableProperties.from_raw(raw)
 
-        assert props.food == 0
-        assert props.water == 0
+        assert props.food is None
+        assert props.water is None
 
 
 # ---------------------------------------------------------------------------
@@ -101,9 +101,9 @@ class TestWaterProperties:
         raw, _ = _load_fixture("water_berries")
         props = ConsumableProperties.from_raw(raw)
 
-        assert props.aid is False
-        assert props.bleeding is False
-        assert props.should_delete_after_use is True
+        assert props.aid is None
+        assert props.bleeding is None
+        assert props.should_delete_after_use is None
 
 
 # ---------------------------------------------------------------------------
@@ -115,44 +115,44 @@ class TestConsumableGeneral:
     """General ConsumableProperties tests."""
 
     def test_consumable_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = ConsumableProperties.from_raw({})
 
-        assert props.health == 0
-        assert props.food == 0
-        assert props.water == 0
-        assert props.virus == 0
-        assert props.disinfectant == 0
-        assert props.energy == 0
-        assert props.vision == 0
-        assert props.oxygen == 0
-        assert props.warmth == 0
-        assert props.experience == 0
+        assert props.health is None
+        assert props.food is None
+        assert props.water is None
+        assert props.virus is None
+        assert props.disinfectant is None
+        assert props.energy is None
+        assert props.vision is None
+        assert props.oxygen is None
+        assert props.warmth is None
+        assert props.experience is None
 
-        assert props.damage_player == 0
-        assert props.damage_zombie == 0
-        assert props.damage_animal == 0
-        assert props.damage_barricade == 0
-        assert props.damage_structure == 0
-        assert props.damage_vehicle == 0
-        assert props.damage_resource == 0
-        assert props.damage_object == 0
+        assert props.damage_player is None
+        assert props.damage_zombie is None
+        assert props.damage_animal is None
+        assert props.damage_barricade is None
+        assert props.damage_structure is None
+        assert props.damage_vehicle is None
+        assert props.damage_resource is None
+        assert props.damage_object is None
 
-        assert props.range == 0
-        assert props.durability == 0
-        assert props.wear == 0
-        assert props.invulnerable is False
+        assert props.range is None
+        assert props.durability is None
+        assert props.wear is None
+        assert props.invulnerable is None
 
-        assert props.bleeding is False
-        assert props.bleeding_modifier == ""
-        assert props.broken is False
-        assert props.bones_modifier == ""
-        assert props.aid is False
-        assert props.should_delete_after_use is True
+        assert props.bleeding is None
+        assert props.bleeding_modifier is None
+        assert props.broken is None
+        assert props.bones_modifier is None
+        assert props.aid is None
+        assert props.should_delete_after_use is None
 
-        assert props.item_reward_spawn_id == 0
-        assert props.min_item_rewards == 0
-        assert props.max_item_rewards == 0
+        assert props.item_reward_spawn_id is None
+        assert props.min_item_rewards is None
+        assert props.max_item_rewards is None
 
     def test_consumable_serializes(self):
         """model_dump works and produces flat dict."""

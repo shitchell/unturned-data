@@ -45,25 +45,25 @@ class TestBarricadeDefaults:
 
     def test_barricade_defaults(self):
         props = BarricadeProperties()
-        assert props.health == 0
-        assert props.range == 0
-        assert props.radius == 0
-        assert props.offset == 0
-        assert props.can_be_damaged is True
-        assert props.locked is False
-        assert props.vulnerable is False
-        assert props.bypass_claim is False
-        assert props.allow_placement_on_vehicle is False
-        assert props.unrepairable is False
-        assert props.proof_explosion is False
-        assert props.unpickupable is False
-        assert props.bypass_pickup_ownership is False
-        assert props.allow_placement_inside_clip_volumes is False
-        assert props.unsalvageable is False
-        assert props.salvage_duration_multiplier == 1.0
-        assert props.unsaveable is False
-        assert props.allow_collision_while_animating is False
-        assert props.armor_tier == ""
+        assert props.health is None
+        assert props.range is None
+        assert props.radius is None
+        assert props.offset is None
+        assert props.can_be_damaged is None
+        assert props.locked is None
+        assert props.vulnerable is None
+        assert props.bypass_claim is None
+        assert props.allow_placement_on_vehicle is None
+        assert props.unrepairable is None
+        assert props.proof_explosion is None
+        assert props.unpickupable is None
+        assert props.bypass_pickup_ownership is None
+        assert props.allow_placement_inside_clip_volumes is None
+        assert props.unsalvageable is None
+        assert props.salvage_duration_multiplier is None
+        assert props.unsaveable is None
+        assert props.allow_collision_while_animating is None
+        assert props.armor_tier is None
 
 
 # ---------------------------------------------------------------------------
@@ -90,16 +90,16 @@ class TestTrapProperties:
         assert props.damage_player == 40.0
         assert props.damage_zombie == 80.0
         assert props.damage_animal == 80.0
-        assert props.damage_barricade == 0.0
-        assert props.damage_structure == 0.0
-        assert props.damage_vehicle == 0.0
+        assert props.damage_barricade is None
+        assert props.damage_structure is None
+        assert props.damage_vehicle is None
 
-        # Trap-specific defaults
-        assert props.trap_setup_delay == 0.25
-        assert props.trap_cooldown == 0.0
-        assert props.broken is False
-        assert props.explosive is False
-        assert props.damage_tires is False
+        # Trap-specific defaults (not present in fixture -> None)
+        assert props.trap_setup_delay is None
+        assert props.trap_cooldown is None
+        assert props.broken is None
+        assert props.explosive is None
+        assert props.damage_tires is None
 
     def test_trap_consumed_keys(self):
         raw = {
@@ -145,9 +145,9 @@ class TestStorageProperties:
 
     def test_storage_defaults(self):
         props = StorageProperties()
-        assert props.storage_x == 0
-        assert props.storage_y == 0
-        assert props.display is False
+        assert props.storage_x is None
+        assert props.storage_y is None
+        assert props.display is None
 
 
 # ---------------------------------------------------------------------------
@@ -176,10 +176,10 @@ class TestFarmProperties:
 
     def test_farm_defaults(self):
         props = FarmProperties()
-        assert props.growth == 0
-        assert props.grow == 0
-        assert props.allow_fertilizer is True
-        assert props.harvest_reward_experience == 1
+        assert props.growth is None
+        assert props.grow is None
+        assert props.allow_fertilizer is None
+        assert props.harvest_reward_experience is None
 
     def test_farm_ignored_keys(self):
         assert FarmProperties.is_ignored("Grow_SpawnTable")
@@ -249,9 +249,9 @@ class TestSentryProperties:
 
     def test_sentry_defaults(self):
         props = SentryProperties()
-        assert props.detection_radius == 48.0
-        assert props.target_loss_radius == 0
-        assert props.mode == ""
+        assert props.detection_radius is None
+        assert props.target_loss_radius is None
+        assert props.mode is None
 
     def test_sentry_ignored_keys(self):
         assert SentryProperties.is_ignored("Target_Acquired_Effect")

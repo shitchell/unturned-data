@@ -7,21 +7,25 @@ from typing import Any, ClassVar
 from unturned_data.models.properties.base import ItemProperties
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -32,7 +36,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -50,31 +54,31 @@ class ClothingProperties(ItemProperties):
         "Ignore_Hand",
     }
 
-    armor: float = 1.0
-    armor_explosion: float = 0
-    proof_water: bool = False
-    proof_fire: bool = False
-    proof_radiation: bool = False
-    movement_speed_multiplier: float = 1.0
-    visible_on_ragdoll: bool = True
-    hair_visible: bool = True
-    beard_visible: bool = True
+    armor: float | None = None
+    armor_explosion: float | None = None
+    proof_water: bool | None = None
+    proof_fire: bool | None = None
+    proof_radiation: bool | None = None
+    movement_speed_multiplier: float | None = None
+    visible_on_ragdoll: bool | None = None
+    hair_visible: bool | None = None
+    beard_visible: bool | None = None
 
     @classmethod
     def _extract_clothing_fields(cls, raw: dict[str, Any]) -> dict[str, Any]:
         """Extract fields common to all clothing types."""
         fields: dict[str, Any] = {}
-        fields["armor"] = _get_float(raw, "Armor", 1.0)
+        fields["armor"] = _get_float(raw, "Armor")
         fields["armor_explosion"] = _get_float(raw, "Armor_Explosion")
         fields["proof_water"] = _get_bool(raw, "Proof_Water")
         fields["proof_fire"] = _get_bool(raw, "Proof_Fire")
         fields["proof_radiation"] = _get_bool(raw, "Proof_Radiation")
         fields["movement_speed_multiplier"] = _get_float(
-            raw, "Movement_Speed_Multiplier", 1.0
+            raw, "Movement_Speed_Multiplier"
         )
-        fields["visible_on_ragdoll"] = _get_bool(raw, "Visible_On_Ragdoll", True)
-        fields["hair_visible"] = _get_bool(raw, "Hair_Visible", True)
-        fields["beard_visible"] = _get_bool(raw, "Beard_Visible", True)
+        fields["visible_on_ragdoll"] = _get_bool(raw, "Visible_On_Ragdoll")
+        fields["hair_visible"] = _get_bool(raw, "Hair_Visible")
+        fields["beard_visible"] = _get_bool(raw, "Beard_Visible")
         return fields
 
     @classmethod
@@ -86,8 +90,8 @@ class ClothingProperties(ItemProperties):
 class BagProperties(ClothingProperties):
     """Properties for Backpack, Pants, Shirt, Vest (have storage)."""
 
-    width: int = 0
-    height: int = 0
+    width: int | None = None
+    height: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> BagProperties:
@@ -100,16 +104,16 @@ class BagProperties(ClothingProperties):
 class GearProperties(ClothingProperties):
     """Properties for Hat, Mask, Glasses."""
 
-    hair: bool = False
-    beard: bool = False
-    hair_override: str = ""
-    vision: str = ""
-    nightvision_color_r: int = 0
-    nightvision_color_g: int = 0
-    nightvision_color_b: int = 0
-    nightvision_fog_intensity: float = 0
-    blindfold: bool = False
-    earpiece: bool = False
+    hair: bool | None = None
+    beard: bool | None = None
+    hair_override: str | None = None
+    vision: str | None = None
+    nightvision_color_r: int | None = None
+    nightvision_color_g: int | None = None
+    nightvision_color_b: int | None = None
+    nightvision_fog_intensity: float | None = None
+    blindfold: bool | None = None
+    earpiece: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> GearProperties:

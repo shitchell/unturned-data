@@ -7,21 +7,25 @@ from typing import Any, ClassVar
 from unturned_data.models.properties.base import ItemProperties
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -32,7 +36,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -49,20 +53,20 @@ class StructureProperties(ItemProperties):
         "PlacementAudioClip",
     }
 
-    construct: str = ""
-    health: int = 0
-    range: float = 0
-    can_be_damaged: bool = True
-    requires_pillars: bool = True
-    vulnerable: bool = False
-    unrepairable: bool = False
-    proof_explosion: bool = False
-    unpickupable: bool = False
-    unsalvageable: bool = False
-    salvage_duration_multiplier: float = 1.0
-    unsaveable: bool = False
-    armor_tier: str = ""
-    foliage_cut_radius: float = 6.0
+    construct: str | None = None
+    health: int | None = None
+    range: float | None = None
+    can_be_damaged: bool | None = None
+    requires_pillars: bool | None = None
+    vulnerable: bool | None = None
+    unrepairable: bool | None = None
+    proof_explosion: bool | None = None
+    unpickupable: bool | None = None
+    unsalvageable: bool | None = None
+    salvage_duration_multiplier: float | None = None
+    unsaveable: bool | None = None
+    armor_tier: str | None = None
+    foliage_cut_radius: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> StructureProperties:
@@ -70,17 +74,17 @@ class StructureProperties(ItemProperties):
         fields["construct"] = _get_str(raw, "Construct")
         fields["health"] = _get_int(raw, "Health")
         fields["range"] = _get_float(raw, "Range")
-        fields["can_be_damaged"] = _get_bool(raw, "Can_Be_Damaged", True)
-        fields["requires_pillars"] = _get_bool(raw, "Requires_Pillars", True)
+        fields["can_be_damaged"] = _get_bool(raw, "Can_Be_Damaged")
+        fields["requires_pillars"] = _get_bool(raw, "Requires_Pillars")
         fields["vulnerable"] = _get_bool(raw, "Vulnerable")
         fields["unrepairable"] = _get_bool(raw, "Unrepairable")
         fields["proof_explosion"] = _get_bool(raw, "Proof_Explosion")
         fields["unpickupable"] = _get_bool(raw, "Unpickupable")
         fields["unsalvageable"] = _get_bool(raw, "Unsalvageable")
         fields["salvage_duration_multiplier"] = _get_float(
-            raw, "Salvage_Duration_Multiplier", 1.0
+            raw, "Salvage_Duration_Multiplier"
         )
         fields["unsaveable"] = _get_bool(raw, "Unsaveable")
         fields["armor_tier"] = _get_str(raw, "Armor_Tier")
-        fields["foliage_cut_radius"] = _get_float(raw, "Foliage_Cut_Radius", 6.0)
+        fields["foliage_cut_radius"] = _get_float(raw, "Foliage_Cut_Radius")
         return cls(**fields)

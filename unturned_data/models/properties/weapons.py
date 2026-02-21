@@ -16,21 +16,25 @@ def _get(raw: dict[str, Any], key: str, default: Any = None) -> Any:
     return val
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -41,7 +45,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -147,140 +151,140 @@ class GunProperties(ItemProperties):
     ]
 
     # Fire
-    firerate: int = 0
-    action: str = ""
-    safety: bool = False
-    semi: bool = False
-    auto: bool = False
-    bursts: int = 0
-    turret: bool = False
+    firerate: int | None = None
+    action: str | None = None
+    safety: bool | None = None
+    semi: bool | None = None
+    auto: bool | None = None
+    bursts: int | None = None
+    turret: bool | None = None
 
     # Damage per target
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
 
     # Player multipliers
-    player_skull_multiplier: float = 0
-    player_spine_multiplier: float = 0
-    player_arm_multiplier: float = 0
-    player_leg_multiplier: float = 0
+    player_skull_multiplier: float | None = None
+    player_spine_multiplier: float | None = None
+    player_arm_multiplier: float | None = None
+    player_leg_multiplier: float | None = None
 
     # Zombie multipliers
-    zombie_skull_multiplier: float = 0
-    zombie_spine_multiplier: float = 0
-    zombie_arm_multiplier: float = 0
-    zombie_leg_multiplier: float = 0
+    zombie_skull_multiplier: float | None = None
+    zombie_spine_multiplier: float | None = None
+    zombie_arm_multiplier: float | None = None
+    zombie_leg_multiplier: float | None = None
 
     # Animal multipliers
-    animal_skull_multiplier: float = 0
-    animal_spine_multiplier: float = 0
-    animal_leg_multiplier: float = 0
+    animal_skull_multiplier: float | None = None
+    animal_spine_multiplier: float | None = None
+    animal_leg_multiplier: float | None = None
 
     # Damage mods
-    player_damage_bleeding: str = ""
-    player_damage_bones: str = ""
-    player_damage_food: float = 0
-    player_damage_water: float = 0
-    player_damage_virus: float = 0
-    player_damage_hallucination: float = 0
+    player_damage_bleeding: str | None = None
+    player_damage_bones: str | None = None
+    player_damage_food: float | None = None
+    player_damage_water: float | None = None
+    player_damage_virus: float | None = None
+    player_damage_hallucination: float | None = None
 
     # Accuracy
-    spread_hip: float = 0
-    spread_aim: float = 0
-    spread_sprint: float = 1.25
-    spread_crouch: float = 0.85
-    spread_prone: float = 0.7
+    spread_hip: float | None = None
+    spread_aim: float | None = None
+    spread_sprint: float | None = None
+    spread_crouch: float | None = None
+    spread_prone: float | None = None
 
     # Range
-    range: float = 0
-    range_rangefinder: float = 0
+    range: float | None = None
+    range_rangefinder: float | None = None
 
     # Recoil
-    recoil_min_x: float = 0
-    recoil_max_x: float = 0
-    recoil_min_y: float = 0
-    recoil_max_y: float = 0
-    recoil_aim: float = 1.0
-    aiming_recoil_multiplier: float = 1.0
-    recover_x: float = 0
-    recover_y: float = 0
-    recoil_sprint: float = 1.25
-    recoil_crouch: float = 0.85
-    recoil_prone: float = 0.7
+    recoil_min_x: float | None = None
+    recoil_max_x: float | None = None
+    recoil_min_y: float | None = None
+    recoil_max_y: float | None = None
+    recoil_aim: float | None = None
+    aiming_recoil_multiplier: float | None = None
+    recover_x: float | None = None
+    recover_y: float | None = None
+    recoil_sprint: float | None = None
+    recoil_crouch: float | None = None
+    recoil_prone: float | None = None
 
     # Shake
-    shake_min_x: float = 0
-    shake_min_y: float = 0
-    shake_min_z: float = 0
-    shake_max_x: float = 0
-    shake_max_y: float = 0
-    shake_max_z: float = 0
+    shake_min_x: float | None = None
+    shake_min_y: float | None = None
+    shake_min_z: float | None = None
+    shake_max_x: float | None = None
+    shake_max_y: float | None = None
+    shake_max_z: float | None = None
 
     # Ballistics
-    ballistic_steps: int = 0
-    ballistic_travel: float = 10.0
-    ballistic_drop: float = 0
-    ballistic_force: float = 0
-    damage_falloff_range: float = 1.0
-    damage_falloff_multiplier: float = 1.0
+    ballistic_steps: int | None = None
+    ballistic_travel: float | None = None
+    ballistic_drop: float | None = None
+    ballistic_force: float | None = None
+    damage_falloff_range: float | None = None
+    damage_falloff_multiplier: float | None = None
 
     # Projectile
-    projectile_lifespan: float = 30.0
-    projectile_penetrate_buildables: bool = False
-    projectile_explosion_launch_speed: float = 0
+    projectile_lifespan: float | None = None
+    projectile_penetrate_buildables: bool | None = None
+    projectile_explosion_launch_speed: float | None = None
 
     # Magazine
-    ammo_min: int = 0
-    ammo_max: int = 0
-    caliber: int = 0
+    ammo_min: int | None = None
+    ammo_max: int | None = None
+    caliber: int | None = None
     magazine_calibers: list[int] = []
     attachment_calibers: list[int] = []
-    default_sight: str = ""
-    default_tactical: str = ""
-    default_grip: str = ""
-    default_barrel: str = ""
-    default_magazine: str = ""
-    hook_sight: bool = False
-    hook_tactical: bool = False
-    hook_grip: bool = False
-    hook_barrel: bool = False
+    default_sight: str | None = None
+    default_tactical: str | None = None
+    default_grip: str | None = None
+    default_barrel: str | None = None
+    default_magazine: str | None = None
+    hook_sight: bool | None = None
+    hook_tactical: bool | None = None
+    hook_grip: bool | None = None
+    hook_barrel: bool | None = None
 
     # Magazine handling
-    delete_empty_magazines: bool = False
-    should_delete_empty_magazines: bool = False
-    requires_nonzero_attachment_caliber: bool = False
-    allow_magazine_change: bool = True
-    unplace: float = 0
-    replace: float = 0
-    ammo_per_shot: int = 1
-    infinite_ammo: bool = False
+    delete_empty_magazines: bool | None = None
+    should_delete_empty_magazines: bool | None = None
+    requires_nonzero_attachment_caliber: bool | None = None
+    allow_magazine_change: bool | None = None
+    unplace: float | None = None
+    replace: float | None = None
+    ammo_per_shot: int | None = None
+    infinite_ammo: bool | None = None
 
     # Reload
-    reload_time: float = 0
-    hammer_timer: float = 0
-    fire_delay_seconds: float = 0
+    reload_time: float | None = None
+    hammer_timer: float | None = None
+    fire_delay_seconds: float | None = None
 
     # Misc
-    alert_radius: float = 0
-    instakill_headshots: bool = False
-    can_aim_during_sprint: bool = False
-    aiming_movement_speed_multiplier: float = 0
-    can_ever_jam: bool = False
-    jam_quality_threshold: float = 0.4
-    jam_max_chance: float = 0.1
-    unjam_chamber_anim: str = "UnjamChamber"
-    gunshot_rolloff_distance: float = 0
-    durability: float = 0
-    wear: int = 0
-    invulnerable: bool = False
-    stun_zombie_always: bool = False
-    stun_zombie_never: bool = False
+    alert_radius: float | None = None
+    instakill_headshots: bool | None = None
+    can_aim_during_sprint: bool | None = None
+    aiming_movement_speed_multiplier: float | None = None
+    can_ever_jam: bool | None = None
+    jam_quality_threshold: float | None = None
+    jam_max_chance: float | None = None
+    unjam_chamber_anim: str | None = None
+    gunshot_rolloff_distance: float | None = None
+    durability: float | None = None
+    wear: int | None = None
+    invulnerable: bool | None = None
+    stun_zombie_always: bool | None = None
+    stun_zombie_never: bool | None = None
 
     # Complex
     magazine_replacements: list[dict[str, Any]] = []
@@ -314,9 +318,9 @@ class GunProperties(ItemProperties):
         # Accuracy
         fields["spread_hip"] = _get_float(raw, "Spread_Hip")
         fields["spread_aim"] = _get_float(raw, "Spread_Aim")
-        fields["spread_sprint"] = _get_float(raw, "Spread_Sprint", 1.25)
-        fields["spread_crouch"] = _get_float(raw, "Spread_Crouch", 0.85)
-        fields["spread_prone"] = _get_float(raw, "Spread_Prone", 0.7)
+        fields["spread_sprint"] = _get_float(raw, "Spread_Sprint")
+        fields["spread_crouch"] = _get_float(raw, "Spread_Crouch")
+        fields["spread_prone"] = _get_float(raw, "Spread_Prone")
 
         # Range
         fields["range"] = _get_float(raw, "Range")
@@ -327,15 +331,13 @@ class GunProperties(ItemProperties):
         fields["recoil_max_x"] = _get_float(raw, "Recoil_Max_X")
         fields["recoil_min_y"] = _get_float(raw, "Recoil_Min_Y")
         fields["recoil_max_y"] = _get_float(raw, "Recoil_Max_Y")
-        fields["recoil_aim"] = _get_float(raw, "Recoil_Aim", 1.0)
-        fields["aiming_recoil_multiplier"] = _get_float(
-            raw, "Aiming_Recoil_Multiplier", 1.0
-        )
+        fields["recoil_aim"] = _get_float(raw, "Recoil_Aim")
+        fields["aiming_recoil_multiplier"] = _get_float(raw, "Aiming_Recoil_Multiplier")
         fields["recover_x"] = _get_float(raw, "Recover_X")
         fields["recover_y"] = _get_float(raw, "Recover_Y")
-        fields["recoil_sprint"] = _get_float(raw, "Recoil_Sprint", 1.25)
-        fields["recoil_crouch"] = _get_float(raw, "Recoil_Crouch", 0.85)
-        fields["recoil_prone"] = _get_float(raw, "Recoil_Prone", 0.7)
+        fields["recoil_sprint"] = _get_float(raw, "Recoil_Sprint")
+        fields["recoil_crouch"] = _get_float(raw, "Recoil_Crouch")
+        fields["recoil_prone"] = _get_float(raw, "Recoil_Prone")
 
         # Shake
         fields["shake_min_x"] = _get_float(raw, "Shake_Min_X")
@@ -347,16 +349,16 @@ class GunProperties(ItemProperties):
 
         # Ballistics
         fields["ballistic_steps"] = _get_int(raw, "Ballistic_Steps")
-        fields["ballistic_travel"] = _get_float(raw, "Ballistic_Travel", 10.0)
+        fields["ballistic_travel"] = _get_float(raw, "Ballistic_Travel")
         fields["ballistic_drop"] = _get_float(raw, "Ballistic_Drop")
         fields["ballistic_force"] = _get_float(raw, "Ballistic_Force")
-        fields["damage_falloff_range"] = _get_float(raw, "Damage_Falloff_Range", 1.0)
+        fields["damage_falloff_range"] = _get_float(raw, "Damage_Falloff_Range")
         fields["damage_falloff_multiplier"] = _get_float(
-            raw, "Damage_Falloff_Multiplier", 1.0
+            raw, "Damage_Falloff_Multiplier"
         )
 
         # Projectile
-        fields["projectile_lifespan"] = _get_float(raw, "Projectile_Lifespan", 30.0)
+        fields["projectile_lifespan"] = _get_float(raw, "Projectile_Lifespan")
         fields["projectile_penetrate_buildables"] = _get_bool(
             raw, "Projectile_Penetrate_Buildables"
         )
@@ -395,10 +397,10 @@ class GunProperties(ItemProperties):
         fields["requires_nonzero_attachment_caliber"] = _get_bool(
             raw, "Requires_Nonzero_Attachment_Caliber"
         )
-        fields["allow_magazine_change"] = _get_bool(raw, "Allow_Magazine_Change", True)
+        fields["allow_magazine_change"] = _get_bool(raw, "Allow_Magazine_Change")
         fields["unplace"] = _get_float(raw, "Unplace")
         fields["replace"] = _get_float(raw, "Replace")
-        fields["ammo_per_shot"] = _get_int(raw, "Ammo_Per_Shot", 1)
+        fields["ammo_per_shot"] = _get_int(raw, "Ammo_Per_Shot")
         fields["infinite_ammo"] = _get_bool(raw, "Infinite_Ammo")
 
         # Reload
@@ -414,11 +416,9 @@ class GunProperties(ItemProperties):
             raw, "Aiming_Movement_Speed_Multiplier"
         )
         fields["can_ever_jam"] = _get_bool(raw, "Can_Ever_Jam")
-        fields["jam_quality_threshold"] = _get_float(raw, "Jam_Quality_Threshold", 0.4)
-        fields["jam_max_chance"] = _get_float(raw, "Jam_Max_Chance", 0.1)
-        fields["unjam_chamber_anim"] = _get_str(
-            raw, "Unjam_Chamber_Anim", "UnjamChamber"
-        )
+        fields["jam_quality_threshold"] = _get_float(raw, "Jam_Quality_Threshold")
+        fields["jam_max_chance"] = _get_float(raw, "Jam_Max_Chance")
+        fields["unjam_chamber_anim"] = _get_str(raw, "Unjam_Chamber_Anim")
         fields["gunshot_rolloff_distance"] = _get_float(raw, "Gunshot_Rolloff_Distance")
         fields["durability"] = _get_float(raw, "Durability")
         fields["wear"] = _get_int(raw, "Wear")
@@ -506,55 +506,55 @@ class MeleeProperties(ItemProperties):
     ]
 
     # Damage per target
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
 
     # Player multipliers
-    player_skull_multiplier: float = 0
-    player_spine_multiplier: float = 0
-    player_arm_multiplier: float = 0
-    player_leg_multiplier: float = 0
+    player_skull_multiplier: float | None = None
+    player_spine_multiplier: float | None = None
+    player_arm_multiplier: float | None = None
+    player_leg_multiplier: float | None = None
 
     # Zombie multipliers
-    zombie_skull_multiplier: float = 0
-    zombie_spine_multiplier: float = 0
-    zombie_arm_multiplier: float = 0
-    zombie_leg_multiplier: float = 0
+    zombie_skull_multiplier: float | None = None
+    zombie_spine_multiplier: float | None = None
+    zombie_arm_multiplier: float | None = None
+    zombie_leg_multiplier: float | None = None
 
     # Animal multipliers
-    animal_skull_multiplier: float = 0
-    animal_spine_multiplier: float = 0
-    animal_leg_multiplier: float = 0
+    animal_skull_multiplier: float | None = None
+    animal_spine_multiplier: float | None = None
+    animal_leg_multiplier: float | None = None
 
     # Melee-specific
-    range: float = 0
-    strength: float = 0
-    weak: float = 0
-    strong: float = 0
-    stamina: int = 0
-    repair: bool = False
-    repeated: bool = False
-    light: bool = False
-    alert_radius: float = 0
-    durability: float = 0
-    wear: int = 0
-    invulnerable: bool = False
-    stun_zombie_always: bool = False
-    stun_zombie_never: bool = False
+    range: float | None = None
+    strength: float | None = None
+    weak: float | None = None
+    strong: float | None = None
+    stamina: int | None = None
+    repair: bool | None = None
+    repeated: bool | None = None
+    light: bool | None = None
+    alert_radius: float | None = None
+    durability: float | None = None
+    wear: int | None = None
+    invulnerable: bool | None = None
+    stun_zombie_always: bool | None = None
+    stun_zombie_never: bool | None = None
 
     # Damage mods (melee can have these too)
-    player_damage_bleeding: str = ""
-    player_damage_bones: str = ""
-    player_damage_food: float = 0
-    player_damage_water: float = 0
-    player_damage_virus: float = 0
-    player_damage_hallucination: float = 0
+    player_damage_bleeding: str | None = None
+    player_damage_bones: str | None = None
+    player_damage_food: float | None = None
+    player_damage_water: float | None = None
+    player_damage_virus: float | None = None
+    player_damage_hallucination: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> MeleeProperties:
@@ -630,45 +630,45 @@ class ThrowableProperties(ItemProperties):
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = []
 
     # Damage per target
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
 
     # Player multipliers
-    player_skull_multiplier: float = 0
-    player_spine_multiplier: float = 0
-    player_arm_multiplier: float = 0
-    player_leg_multiplier: float = 0
+    player_skull_multiplier: float | None = None
+    player_spine_multiplier: float | None = None
+    player_arm_multiplier: float | None = None
+    player_leg_multiplier: float | None = None
 
     # Zombie multipliers
-    zombie_skull_multiplier: float = 0
-    zombie_spine_multiplier: float = 0
-    zombie_arm_multiplier: float = 0
-    zombie_leg_multiplier: float = 0
+    zombie_skull_multiplier: float | None = None
+    zombie_spine_multiplier: float | None = None
+    zombie_arm_multiplier: float | None = None
+    zombie_leg_multiplier: float | None = None
 
     # Animal multipliers
-    animal_skull_multiplier: float = 0
-    animal_spine_multiplier: float = 0
-    animal_leg_multiplier: float = 0
+    animal_skull_multiplier: float | None = None
+    animal_spine_multiplier: float | None = None
+    animal_leg_multiplier: float | None = None
 
     # Throwable-specific
-    explosive: bool = False
-    flash: bool = False
-    sticky: bool = False
-    explode_on_impact: bool = False
-    fuse_length: float = 0
-    explosion_launch_speed: float = 0
-    strong_throw_force: float = 1100.0
-    weak_throw_force: float = 600.0
-    boost_throw_force_multiplier: float = 1.4
-    durability: float = 0
-    wear: int = 0
-    invulnerable: bool = False
+    explosive: bool | None = None
+    flash: bool | None = None
+    sticky: bool | None = None
+    explode_on_impact: bool | None = None
+    fuse_length: float | None = None
+    explosion_launch_speed: float | None = None
+    strong_throw_force: float | None = None
+    weak_throw_force: float | None = None
+    boost_throw_force_multiplier: float | None = None
+    durability: float | None = None
+    wear: int | None = None
+    invulnerable: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> ThrowableProperties:
@@ -684,10 +684,10 @@ class ThrowableProperties(ItemProperties):
         fields["explode_on_impact"] = _get_bool(raw, "Explode_On_Impact")
         fields["fuse_length"] = _get_float(raw, "Fuse_Length")
         fields["explosion_launch_speed"] = _get_float(raw, "Explosion_Launch_Speed")
-        fields["strong_throw_force"] = _get_float(raw, "Strong_Throw_Force", 1100.0)
-        fields["weak_throw_force"] = _get_float(raw, "Weak_Throw_Force", 600.0)
+        fields["strong_throw_force"] = _get_float(raw, "Strong_Throw_Force")
+        fields["weak_throw_force"] = _get_float(raw, "Weak_Throw_Force")
         fields["boost_throw_force_multiplier"] = _get_float(
-            raw, "Boost_Throw_Force_Multiplier", 1.4
+            raw, "Boost_Throw_Force_Multiplier"
         )
         fields["durability"] = _get_float(raw, "Durability")
         fields["wear"] = _get_int(raw, "Wear")

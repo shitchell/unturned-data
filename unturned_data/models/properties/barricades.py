@@ -14,21 +14,25 @@ def _get(raw: dict[str, Any], key: str, default: Any = None) -> Any:
     return val
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -39,7 +43,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -93,25 +97,25 @@ class BarricadeProperties(ItemProperties):
         "Item_Dropped_On_Destroy",
     }
 
-    health: int = 0
-    range: float = 0
-    radius: float = 0
-    offset: float = 0
-    can_be_damaged: bool = True
-    locked: bool = False
-    vulnerable: bool = False
-    bypass_claim: bool = False
-    allow_placement_on_vehicle: bool = False
-    unrepairable: bool = False
-    proof_explosion: bool = False
-    unpickupable: bool = False
-    bypass_pickup_ownership: bool = False
-    allow_placement_inside_clip_volumes: bool = False
-    unsalvageable: bool = False
-    salvage_duration_multiplier: float = 1.0
-    unsaveable: bool = False
-    allow_collision_while_animating: bool = False
-    armor_tier: str = ""
+    health: int | None = None
+    range: float | None = None
+    radius: float | None = None
+    offset: float | None = None
+    can_be_damaged: bool | None = None
+    locked: bool | None = None
+    vulnerable: bool | None = None
+    bypass_claim: bool | None = None
+    allow_placement_on_vehicle: bool | None = None
+    unrepairable: bool | None = None
+    proof_explosion: bool | None = None
+    unpickupable: bool | None = None
+    bypass_pickup_ownership: bool | None = None
+    allow_placement_inside_clip_volumes: bool | None = None
+    unsalvageable: bool | None = None
+    salvage_duration_multiplier: float | None = None
+    unsaveable: bool | None = None
+    allow_collision_while_animating: bool | None = None
+    armor_tier: str | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> BarricadeProperties:
@@ -120,7 +124,7 @@ class BarricadeProperties(ItemProperties):
         fields["range"] = _get_float(raw, "Range")
         fields["radius"] = _get_float(raw, "Radius")
         fields["offset"] = _get_float(raw, "Offset")
-        fields["can_be_damaged"] = _get_bool(raw, "Can_Be_Damaged", True)
+        fields["can_be_damaged"] = _get_bool(raw, "Can_Be_Damaged")
         fields["locked"] = _get_bool(raw, "Locked")
         fields["vulnerable"] = _get_bool(raw, "Vulnerable")
         fields["bypass_claim"] = _get_bool(raw, "Bypass_Claim")
@@ -136,7 +140,7 @@ class BarricadeProperties(ItemProperties):
         )
         fields["unsalvageable"] = _get_bool(raw, "Unsalvageable")
         fields["salvage_duration_multiplier"] = _get_float(
-            raw, "Salvage_Duration_Multiplier", 1.0
+            raw, "Salvage_Duration_Multiplier"
         )
         fields["unsaveable"] = _get_bool(raw, "Unsaveable")
         fields["allow_collision_while_animating"] = _get_bool(
@@ -154,9 +158,9 @@ class BarricadeProperties(ItemProperties):
 class StorageProperties(BarricadeProperties):
     """Properties for Storage barricades (crates, lockers, etc.)."""
 
-    storage_x: int = 0
-    storage_y: int = 0
-    display: bool = False
+    storage_x: int | None = None
+    storage_y: int | None = None
+    display: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> StorageProperties:
@@ -182,12 +186,12 @@ class SentryProperties(StorageProperties):
         "Target_Lost_Effect",
     }
 
-    mode: str = ""
-    requires_power: bool = False
-    infinite_ammo: bool = False
-    infinite_quality: bool = False
-    detection_radius: float = 48.0
-    target_loss_radius: float = 0
+    mode: str | None = None
+    requires_power: bool | None = None
+    infinite_ammo: bool | None = None
+    infinite_quality: bool | None = None
+    detection_radius: float | None = None
+    target_loss_radius: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> SentryProperties:
@@ -197,7 +201,7 @@ class SentryProperties(StorageProperties):
         fields["requires_power"] = _get_bool(raw, "Requires_Power")
         fields["infinite_ammo"] = _get_bool(raw, "Infinite_Ammo")
         fields["infinite_quality"] = _get_bool(raw, "Infinite_Quality")
-        fields["detection_radius"] = _get_float(raw, "Detection_Radius", 48.0)
+        fields["detection_radius"] = _get_float(raw, "Detection_Radius")
         fields["target_loss_radius"] = _get_float(raw, "Target_Loss_Radius")
         return cls(**fields)
 
@@ -216,10 +220,10 @@ class FarmProperties(BarricadeProperties):
         "Ignore_Soil_Restrictions",
     }
 
-    growth: int = 0
-    grow: int = 0
-    allow_fertilizer: bool = True
-    harvest_reward_experience: int = 1
+    growth: int | None = None
+    grow: int | None = None
+    allow_fertilizer: bool | None = None
+    harvest_reward_experience: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> FarmProperties:
@@ -227,10 +231,8 @@ class FarmProperties(BarricadeProperties):
         fields = base.model_dump()
         fields["growth"] = _get_int(raw, "Growth")
         fields["grow"] = _get_int(raw, "Grow")
-        fields["allow_fertilizer"] = _get_bool(raw, "Allow_Fertilizer", True)
-        fields["harvest_reward_experience"] = _get_int(
-            raw, "Harvest_Reward_Experience", 1
-        )
+        fields["allow_fertilizer"] = _get_bool(raw, "Allow_Fertilizer")
+        fields["harvest_reward_experience"] = _get_int(raw, "Harvest_Reward_Experience")
         return cls(**fields)
 
 
@@ -242,9 +244,9 @@ class FarmProperties(BarricadeProperties):
 class GeneratorProperties(BarricadeProperties):
     """Properties for Generator barricades."""
 
-    capacity: int = 0
-    wirerange: float = 0
-    burn: float = 0
+    capacity: int | None = None
+    wirerange: float | None = None
+    burn: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> GeneratorProperties:
@@ -277,21 +279,21 @@ class TrapProperties(BarricadeProperties):
         "Explosion2",
     }
 
-    range2: float = 0
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
-    trap_setup_delay: float = 0.25
-    trap_cooldown: float = 0
-    explosion_launch_speed: float = 0
-    broken: bool = False
-    explosive: bool = False
-    damage_tires: bool = False
+    range2: float | None = None
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
+    trap_setup_delay: float | None = None
+    trap_cooldown: float | None = None
+    explosion_launch_speed: float | None = None
+    broken: bool | None = None
+    explosive: bool | None = None
+    damage_tires: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> TrapProperties:
@@ -299,7 +301,7 @@ class TrapProperties(BarricadeProperties):
         fields = base.model_dump()
         fields["range2"] = _get_float(raw, "Range2")
         fields.update(_extract_damage_fields(raw))
-        fields["trap_setup_delay"] = _get_float(raw, "Trap_Setup_Delay", 0.25)
+        fields["trap_setup_delay"] = _get_float(raw, "Trap_Setup_Delay")
         fields["trap_cooldown"] = _get_float(raw, "Trap_Cooldown")
         fields["explosion_launch_speed"] = _get_float(raw, "Explosion_Launch_Speed")
         fields["broken"] = _get_bool(raw, "Broken")
@@ -324,10 +326,10 @@ class TrapProperties(BarricadeProperties):
 class BeaconProperties(BarricadeProperties):
     """Properties for Beacon barricades (horde beacons)."""
 
-    wave: int = 0
-    rewards: int = 0
-    reward_id: int = 0
-    enable_participant_scaling: bool = True
+    wave: int | None = None
+    rewards: int | None = None
+    reward_id: int | None = None
+    enable_participant_scaling: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> BeaconProperties:
@@ -337,7 +339,7 @@ class BeaconProperties(BarricadeProperties):
         fields["rewards"] = _get_int(raw, "Rewards")
         fields["reward_id"] = _get_int(raw, "Reward_ID")
         fields["enable_participant_scaling"] = _get_bool(
-            raw, "Enable_Participant_Scaling", True
+            raw, "Enable_Participant_Scaling"
         )
         return cls(**fields)
 
@@ -350,8 +352,8 @@ class BeaconProperties(BarricadeProperties):
 class TankProperties(BarricadeProperties):
     """Properties for Tank barricades (water/fuel tanks)."""
 
-    source: str = ""
-    resource: int = 0
+    source: str | None = None
+    resource: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> TankProperties:
@@ -375,16 +377,16 @@ class ChargeProperties(BarricadeProperties):
         "Explosion2",
     }
 
-    range2: float = 0
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
-    explosion_launch_speed: float = 0
+    range2: float | None = None
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
+    explosion_launch_speed: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> ChargeProperties:
@@ -412,8 +414,8 @@ class ChargeProperties(BarricadeProperties):
 class LibraryProperties(BarricadeProperties):
     """Properties for Library barricades."""
 
-    capacity: int = 0
-    tax: int = 0
+    capacity: int | None = None
+    tax: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> LibraryProperties:
@@ -432,7 +434,7 @@ class LibraryProperties(BarricadeProperties):
 class OilPumpProperties(BarricadeProperties):
     """Properties for Oil Pump barricades."""
 
-    fuel_capacity: int = 0
+    fuel_capacity: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> OilPumpProperties:

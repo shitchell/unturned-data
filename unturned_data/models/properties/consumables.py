@@ -16,21 +16,25 @@ def _get(raw: dict[str, Any], key: str, default: Any = None) -> Any:
     return val
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -41,7 +45,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -84,45 +88,45 @@ class ConsumableProperties(ItemProperties):
     ]
 
     # Stat effects
-    health: int = 0
-    food: int = 0
-    water: int = 0
-    virus: int = 0
-    disinfectant: int = 0
-    energy: int = 0
-    vision: int = 0
-    oxygen: int = 0
-    warmth: int = 0
-    experience: int = 0
+    health: int | None = None
+    food: int | None = None
+    water: int | None = None
+    virus: int | None = None
+    disinfectant: int | None = None
+    energy: int | None = None
+    vision: int | None = None
+    oxygen: int | None = None
+    warmth: int | None = None
+    experience: int | None = None
 
     # Damage per target
-    damage_player: float = 0
-    damage_zombie: float = 0
-    damage_animal: float = 0
-    damage_barricade: float = 0
-    damage_structure: float = 0
-    damage_vehicle: float = 0
-    damage_resource: float = 0
-    damage_object: float = 0
+    damage_player: float | None = None
+    damage_zombie: float | None = None
+    damage_animal: float | None = None
+    damage_barricade: float | None = None
+    damage_structure: float | None = None
+    damage_vehicle: float | None = None
+    damage_resource: float | None = None
+    damage_object: float | None = None
 
     # Combat stats
-    range: float = 0
-    durability: float = 0
-    wear: int = 0
-    invulnerable: bool = False
+    range: float | None = None
+    durability: float | None = None
+    wear: int | None = None
+    invulnerable: bool | None = None
 
     # Status effects
-    bleeding: bool = False
-    bleeding_modifier: str = ""
-    broken: bool = False
-    bones_modifier: str = ""
-    aid: bool = False
-    should_delete_after_use: bool = True
+    bleeding: bool | None = None
+    bleeding_modifier: str | None = None
+    broken: bool | None = None
+    bones_modifier: str | None = None
+    aid: bool | None = None
+    should_delete_after_use: bool | None = None
 
     # Item rewards
-    item_reward_spawn_id: int = 0
-    min_item_rewards: int = 0
-    max_item_rewards: int = 0
+    item_reward_spawn_id: int | None = None
+    min_item_rewards: int | None = None
+    max_item_rewards: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> ConsumableProperties:
@@ -167,9 +171,7 @@ class ConsumableProperties(ItemProperties):
         fields["broken"] = _get_bool(raw, "Broken")
         fields["bones_modifier"] = _get_str(raw, "Bones_Modifier")
         fields["aid"] = _get_bool(raw, "Aid")
-        fields["should_delete_after_use"] = _get_bool(
-            raw, "Should_Delete_After_Use", True
-        )
+        fields["should_delete_after_use"] = _get_bool(raw, "Should_Delete_After_Use")
 
         # Item rewards
         fields["item_reward_spawn_id"] = _get_int(raw, "Item_Reward_Spawn_ID")

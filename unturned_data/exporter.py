@@ -625,6 +625,9 @@ def export_schema_c(
     # --- Field coverage warnings ---
     # Run field coverage report on all entries
     from unturned_data.models.properties import PROPERTIES_REGISTRY
+    from unturned_data.warnings import NullFieldReport
+
+    null_report = NullFieldReport()
 
     all_entries_for_report = list(base_entries)
     for _safe, (m_entries, _m_assets) in map_data.items():
@@ -637,9 +640,17 @@ def export_schema_c(
             consumed = props_cls.consumed_keys(entry.raw)
         report.check_entry(entry.type, entry.raw, consumed, props_cls)
 
+        # Track null fields for the NullFieldReport
+        if props_cls and entry.properties is not None:
+            null_report.check_entry(entry.type, entry.properties, props_cls)
+
     warnings_text = report.format_warnings()
     if warnings_text:
         print(warnings_text, file=sys.stderr)
+
+    null_warnings = null_report.format_warnings()
+    if null_warnings:
+        print(null_warnings, file=sys.stderr)
 
     if show_ignored:
         from unturned_data.models.properties.base import GLOBAL_IGNORE, GLOBAL_HANDLED

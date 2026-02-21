@@ -38,15 +38,15 @@ class TestClothingBaseDefaults:
     def test_clothing_base_defaults(self):
         props = ClothingProperties.from_raw({})
 
-        assert props.armor == pytest.approx(1.0)
-        assert props.armor_explosion == pytest.approx(0.0)
-        assert props.proof_water is False
-        assert props.proof_fire is False
-        assert props.proof_radiation is False
-        assert props.movement_speed_multiplier == pytest.approx(1.0)
-        assert props.visible_on_ragdoll is True
-        assert props.hair_visible is True
-        assert props.beard_visible is True
+        assert props.armor is None
+        assert props.armor_explosion is None
+        assert props.proof_water is None
+        assert props.proof_fire is None
+        assert props.proof_radiation is None
+        assert props.movement_speed_multiplier is None
+        assert props.visible_on_ragdoll is None
+        assert props.hair_visible is None
+        assert props.beard_visible is None
 
 
 # ---------------------------------------------------------------------------
@@ -67,15 +67,15 @@ class TestBagProperties:
         assert props.height == 7
 
     def test_bag_properties_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = BagProperties.from_raw({})
 
-        assert props.width == 0
-        assert props.height == 0
+        assert props.width is None
+        assert props.height is None
         # Inherits clothing defaults
-        assert props.armor == pytest.approx(1.0)
-        assert props.proof_water is False
-        assert props.movement_speed_multiplier == pytest.approx(1.0)
+        assert props.armor is None
+        assert props.proof_water is None
+        assert props.movement_speed_multiplier is None
 
     def test_bag_properties_serializes(self):
         raw, _ = _load_fixture("backpack_alice")
@@ -120,22 +120,22 @@ class TestGearProperties:
     """GearProperties.from_raw parsing."""
 
     def test_gear_properties_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = GearProperties.from_raw({})
 
-        assert props.hair is False
-        assert props.beard is False
-        assert props.hair_override == ""
-        assert props.vision == ""
-        assert props.nightvision_color_r == 0
-        assert props.nightvision_color_g == 0
-        assert props.nightvision_color_b == 0
-        assert props.nightvision_fog_intensity == pytest.approx(0.0)
-        assert props.blindfold is False
-        assert props.earpiece is False
+        assert props.hair is None
+        assert props.beard is None
+        assert props.hair_override is None
+        assert props.vision is None
+        assert props.nightvision_color_r is None
+        assert props.nightvision_color_g is None
+        assert props.nightvision_color_b is None
+        assert props.nightvision_fog_intensity is None
+        assert props.blindfold is None
+        assert props.earpiece is None
         # Inherits clothing defaults
-        assert props.armor == pytest.approx(1.0)
-        assert props.proof_water is False
+        assert props.armor is None
+        assert props.proof_water is None
 
     def test_gear_properties_nightvision(self):
         """Test gear with nightvision properties."""

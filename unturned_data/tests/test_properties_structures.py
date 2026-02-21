@@ -38,18 +38,18 @@ class TestStructureFromFixture:
         assert props.construct == "Wall"
         assert props.health == 350
         assert props.range == 8.0
-        # Defaults for fields not in fixture
-        assert props.can_be_damaged is True
-        assert props.requires_pillars is True
-        assert props.vulnerable is False
-        assert props.unrepairable is False
-        assert props.proof_explosion is False
-        assert props.unpickupable is False
-        assert props.unsalvageable is False
-        assert props.salvage_duration_multiplier == 1.0
-        assert props.unsaveable is False
-        assert props.armor_tier == ""
-        assert props.foliage_cut_radius == 6.0
+        # Defaults for fields not in fixture (now None)
+        assert props.can_be_damaged is None
+        assert props.requires_pillars is None
+        assert props.vulnerable is None
+        assert props.unrepairable is None
+        assert props.proof_explosion is None
+        assert props.unpickupable is None
+        assert props.unsalvageable is None
+        assert props.salvage_duration_multiplier is None
+        assert props.unsaveable is None
+        assert props.armor_tier is None
+        assert props.foliage_cut_radius is None
 
 
 # ---------------------------------------------------------------------------
@@ -62,20 +62,20 @@ class TestStructureDefaults:
 
     def test_structure_defaults(self):
         props = StructureProperties()
-        assert props.construct == ""
-        assert props.health == 0
-        assert props.range == 0
-        assert props.can_be_damaged is True
-        assert props.requires_pillars is True
-        assert props.vulnerable is False
-        assert props.unrepairable is False
-        assert props.proof_explosion is False
-        assert props.unpickupable is False
-        assert props.unsalvageable is False
-        assert props.salvage_duration_multiplier == 1.0
-        assert props.unsaveable is False
-        assert props.armor_tier == ""
-        assert props.foliage_cut_radius == 6.0
+        assert props.construct is None
+        assert props.health is None
+        assert props.range is None
+        assert props.can_be_damaged is None
+        assert props.requires_pillars is None
+        assert props.vulnerable is None
+        assert props.unrepairable is None
+        assert props.proof_explosion is None
+        assert props.unpickupable is None
+        assert props.unsalvageable is None
+        assert props.salvage_duration_multiplier is None
+        assert props.unsaveable is None
+        assert props.armor_tier is None
+        assert props.foliage_cut_radius is None
 
 
 # ---------------------------------------------------------------------------

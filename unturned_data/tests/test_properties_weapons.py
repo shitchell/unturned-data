@@ -64,7 +64,7 @@ class TestGunProperties:
         assert props.safety is True
         assert props.semi is True
         assert props.auto is True
-        assert props.bursts == 0
+        assert props.bursts is None
 
     def test_gun_properties_hooks(self):
         raw, _ = _load_fixture("gun_maplestrike")
@@ -115,24 +115,25 @@ class TestGunProperties:
         assert "hook_sight" in dumped
 
     def test_gun_properties_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = GunProperties.from_raw({})
 
-        assert props.firerate == 0
-        assert props.action == ""
-        assert props.safety is False
-        assert props.range == 0.0
-        assert props.spread_sprint == pytest.approx(1.25)
-        assert props.spread_crouch == pytest.approx(0.85)
-        assert props.spread_prone == pytest.approx(0.7)
-        assert props.ballistic_travel == pytest.approx(10.0)
-        assert props.recoil_aim == pytest.approx(1.0)
-        assert props.allow_magazine_change is True
-        assert props.ammo_per_shot == 1
-        assert props.jam_quality_threshold == pytest.approx(0.4)
-        assert props.jam_max_chance == pytest.approx(0.1)
-        assert props.unjam_chamber_anim == "UnjamChamber"
-        assert props.projectile_lifespan == pytest.approx(30.0)
+        assert props.firerate is None
+        assert props.action is None
+        assert props.safety is None
+        assert props.range is None
+        assert props.spread_sprint is None
+        assert props.spread_crouch is None
+        assert props.spread_prone is None
+        assert props.ballistic_travel is None
+        assert props.recoil_aim is None
+        assert props.allow_magazine_change is None
+        assert props.ammo_per_shot is None
+        assert props.jam_quality_threshold is None
+        assert props.jam_max_chance is None
+        assert props.unjam_chamber_anim is None
+        assert props.projectile_lifespan is None
+        # List fields keep empty list defaults
         assert props.magazine_calibers == []
         assert props.attachment_calibers == []
         assert props.magazine_replacements == []
@@ -177,15 +178,15 @@ class TestMeleeProperties:
         assert props.damage_object == 20.0
 
     def test_melee_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = MeleeProperties.from_raw({})
 
-        assert props.range == 0.0
-        assert props.strength == 0.0
-        assert props.stamina == 0
-        assert props.repair is False
-        assert props.repeated is False
-        assert props.light is False
+        assert props.range is None
+        assert props.strength is None
+        assert props.stamina is None
+        assert props.repair is None
+        assert props.repeated is None
+        assert props.light is None
 
     def test_melee_serializes_flat(self):
         raw, _ = _load_fixture("melee_katana")
@@ -207,21 +208,21 @@ class TestThrowableProperties:
     """ThrowableProperties.from_raw parsing."""
 
     def test_throwable_properties_defaults(self):
-        """Empty raw dict produces correct defaults."""
+        """Empty raw dict produces None for all scalar fields."""
         props = ThrowableProperties.from_raw({})
 
-        assert props.explosive is False
-        assert props.flash is False
-        assert props.sticky is False
-        assert props.explode_on_impact is False
-        assert props.fuse_length == 0.0
-        assert props.explosion_launch_speed == 0.0
-        assert props.strong_throw_force == pytest.approx(1100.0)
-        assert props.weak_throw_force == pytest.approx(600.0)
-        assert props.boost_throw_force_multiplier == pytest.approx(1.4)
-        assert props.durability == 0.0
-        assert props.wear == 0
-        assert props.invulnerable is False
+        assert props.explosive is None
+        assert props.flash is None
+        assert props.sticky is None
+        assert props.explode_on_impact is None
+        assert props.fuse_length is None
+        assert props.explosion_launch_speed is None
+        assert props.strong_throw_force is None
+        assert props.weak_throw_force is None
+        assert props.boost_throw_force_multiplier is None
+        assert props.durability is None
+        assert props.wear is None
+        assert props.invulnerable is None
 
     def test_throwable_from_raw(self):
         """Test with synthetic raw data."""

@@ -8,21 +8,25 @@ from typing import Any, ClassVar
 from unturned_data.models.properties.base import ItemProperties
 
 
-def _get_int(raw: dict[str, Any], key: str, default: int = 0) -> int:
+def _get_int(raw: dict[str, Any], key: str, default: int | None = None) -> int | None:
     val = raw.get(key)
     if val is None:
         return default
     return int(val)
 
 
-def _get_float(raw: dict[str, Any], key: str, default: float = 0.0) -> float:
+def _get_float(
+    raw: dict[str, Any], key: str, default: float | None = None
+) -> float | None:
     val = raw.get(key)
     if val is None:
         return default
     return float(val)
 
 
-def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
+def _get_bool(
+    raw: dict[str, Any], key: str, default: bool | None = None
+) -> bool | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -33,7 +37,7 @@ def _get_bool(raw: dict[str, Any], key: str, default: bool = False) -> bool:
     return bool(val)
 
 
-def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
+def _get_str(raw: dict[str, Any], key: str, default: str | None = None) -> str | None:
     val = raw.get(key)
     if val is None:
         return default
@@ -48,7 +52,7 @@ def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
 class CloudProperties(ItemProperties):
     """Properties for Cloud items (smoke grenades, etc.)."""
 
-    gravity: float = 0
+    gravity: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> CloudProperties:
@@ -63,9 +67,9 @@ class CloudProperties(ItemProperties):
 class MapProperties(ItemProperties):
     """Properties for Map items."""
 
-    enables_compass: bool = False
-    enables_chart: bool = False
-    enables_map: bool = False
+    enables_compass: bool | None = None
+    enables_chart: bool | None = None
+    enables_map: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> MapProperties:
@@ -84,7 +88,7 @@ class MapProperties(ItemProperties):
 class KeyProperties(ItemProperties):
     """Properties for Key items."""
 
-    exchange_with_target_item: bool = False
+    exchange_with_target_item: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> KeyProperties:
@@ -101,7 +105,7 @@ class KeyProperties(ItemProperties):
 class FisherProperties(ItemProperties):
     """Properties for Fisher items (fishing rods)."""
 
-    reward_id: int = 0
+    reward_id: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> FisherProperties:
@@ -116,7 +120,7 @@ class FisherProperties(ItemProperties):
 class FuelProperties(ItemProperties):
     """Properties for Fuel items (gas cans, etc.)."""
 
-    fuel: int = 0
+    fuel: int | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> FuelProperties:
@@ -131,7 +135,7 @@ class FuelProperties(ItemProperties):
 class OpticProperties(ItemProperties):
     """Properties for Optic items (binoculars, etc.)."""
 
-    zoom: float = 0
+    zoom: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> OpticProperties:
@@ -150,25 +154,25 @@ _WATER_STATS = ("health", "food", "water", "virus", "stamina", "oxygen")
 class RefillProperties(ItemProperties):
     """Properties for Refill items (water containers)."""
 
-    water: float = 0
-    clean_health: float = 0
-    salty_health: float = 0
-    dirty_health: float = 0
-    clean_food: float = 0
-    salty_food: float = 0
-    dirty_food: float = 0
-    clean_water: float = 0
-    salty_water: float = 0
-    dirty_water: float = 0
-    clean_virus: float = 0
-    salty_virus: float = 0
-    dirty_virus: float = 0
-    clean_stamina: float = 0
-    salty_stamina: float = 0
-    dirty_stamina: float = 0
-    clean_oxygen: float = 0
-    salty_oxygen: float = 0
-    dirty_oxygen: float = 0
+    water: float | None = None
+    clean_health: float | None = None
+    salty_health: float | None = None
+    dirty_health: float | None = None
+    clean_food: float | None = None
+    salty_food: float | None = None
+    dirty_food: float | None = None
+    clean_water: float | None = None
+    salty_water: float | None = None
+    dirty_water: float | None = None
+    clean_virus: float | None = None
+    salty_virus: float | None = None
+    dirty_virus: float | None = None
+    clean_stamina: float | None = None
+    salty_stamina: float | None = None
+    dirty_stamina: float | None = None
+    clean_oxygen: float | None = None
+    salty_oxygen: float | None = None
+    dirty_oxygen: float | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> RefillProperties:
@@ -192,12 +196,12 @@ class BoxProperties(ItemProperties):
 
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = [re.compile(r"^Drop_\d+$")]
 
-    generate: int = 0
-    destroy: int = 0
-    drops: int = 0
-    item_origin: str = ""
-    probability_model: str = ""
-    contains_bonus_items: bool = False
+    generate: int | None = None
+    destroy: int | None = None
+    drops: int | None = None
+    item_origin: str | None = None
+    probability_model: str | None = None
+    contains_bonus_items: bool | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> BoxProperties:
@@ -219,7 +223,7 @@ class BoxProperties(ItemProperties):
 class TireProperties(ItemProperties):
     """Properties for Tire items."""
 
-    mode: str = ""
+    mode: str | None = None
 
     @classmethod
     def from_raw(cls, raw: dict[str, Any]) -> TireProperties:
