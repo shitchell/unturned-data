@@ -1,6 +1,7 @@
 """
 Tests for the JSON formatter.
 """
+
 from __future__ import annotations
 
 import json

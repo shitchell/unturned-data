@@ -32,6 +32,7 @@ def _load_fixture(name: str) -> tuple[dict, dict]:
     assert dat_files, f"No .dat files in {fixture_dir}"
     from unturned_data.dat_parser import parse_dat_file
     from unturned_data.loader import load_english_dat
+
     raw = parse_dat_file(dat_files[0])
     english = load_english_dat(fixture_dir / "English.dat")
     return raw, english

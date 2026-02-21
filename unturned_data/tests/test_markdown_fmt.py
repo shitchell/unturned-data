@@ -1,6 +1,7 @@
 """
 Tests for the Markdown formatter.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -117,7 +118,11 @@ class TestEntriesToMarkdown:
         result = entries_to_markdown(entries)
         # Find the table rows (lines starting with |)
         lines = result.split("\n")
-        data_rows = [l for l in lines if l.startswith("| ") and "---" not in l and "Name" not in l]
+        data_rows = [
+            l
+            for l in lines
+            if l.startswith("| ") and "---" not in l and "Name" not in l
+        ]
         # Bear (id=1) should come before Bear (id=3) which should come before Deer
         assert len(data_rows) == 3
         assert "Bear" in data_rows[0]
