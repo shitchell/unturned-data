@@ -30,6 +30,27 @@ from unturned_data.schema import (
     SpawnResolution,
 )
 
+# Namespace mapping: top-level source directory -> namespace key
+_SOURCE_DIR_TO_NAMESPACE: dict[str, str] = {
+    "Items": "items",
+    "Vehicles": "vehicles",
+    "Objects": "objects",
+    "Spawns": "spawns",
+    "Animals": "animals",
+    "Effects": "effects",
+    "Trees": "resources",
+    "Skins": "skins",
+    "Mythics": "mythics",
+    "NPCs": "npcs",
+}
+
+
+def _get_namespace(source_path: str) -> str:
+    """Derive the asset namespace from source_path's top-level directory."""
+    top_dir = source_path.split("/")[0] if source_path else ""
+    return _SOURCE_DIR_TO_NAMESPACE.get(top_dir, top_dir.lower())
+
+
 # The fields that belong in Schema C entries.json -- only these are serialized
 # at the top level, preventing subclass-specific Pydantic fields from leaking.
 SCHEMA_C_FIELDS = {
@@ -252,11 +273,12 @@ def _build_guid_index(
 ) -> GuidIndex:
     """Build a master GUID index covering all entries and assets."""
     entries_index: dict[str, GuidIndexEntry] = {}
-    by_id: dict[str, str] = {}
+    by_id: dict[str, dict[str, dict[str, str]]] = {}
 
     def _index_bundle_entries(
         items: list[BundleEntry],
         file_path: str,
+        source_label: str = "base",
     ) -> None:
         # Entries are serialized sorted by (name, id)
         sorted_items = sorted(items, key=lambda e: (e.name, e.id))
@@ -270,7 +292,13 @@ def _build_guid_index(
                     name=entry.name,
                 )
             if entry.id:
-                by_id[str(entry.id)] = entry.guid
+                id_str = str(entry.id)
+                ns = _get_namespace(entry.source_path)
+                if id_str not in by_id:
+                    by_id[id_str] = {}
+                if ns not in by_id[id_str]:
+                    by_id[id_str][ns] = {}
+                by_id[id_str][ns][source_label] = entry.guid
 
     def _index_assets(
         items: list[AssetEntry],
@@ -293,7 +321,9 @@ def _build_guid_index(
     # Index map entries and assets
     for safe_name, (m_entries, m_assets) in sorted(map_data.items()):
         if m_entries:
-            _index_bundle_entries(m_entries, f"maps/{safe_name}/entries.json")
+            _index_bundle_entries(
+                m_entries, f"maps/{safe_name}/entries.json", source_label=safe_name,
+            )
         if m_assets:
             _index_assets(m_assets, f"maps/{safe_name}/assets.json")
 

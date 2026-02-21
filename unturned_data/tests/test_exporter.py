@@ -157,3 +157,48 @@ class TestExportSchemaC:
         assert "fake_map" in manifest["maps"]
         map_info = manifest["maps"]["fake_map"]
         assert map_info["map_file"] == "maps/fake_map/map.json"
+
+
+class TestBuildGuidIndexByIdFormat:
+    def test_by_id_namespace_source_grouped(self):
+        """by_id should group by namespace and source."""
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.models import BundleEntry
+
+        entries = [
+            BundleEntry(guid="aaa", type="Gun", id=100, name="Eaglefire",
+                        source_path="Items/Guns/Eaglefire"),
+            BundleEntry(guid="bbb", type="Spawn", id=100, name="Spawn 100",
+                        source_path="Spawns/Spawn_100"),
+            BundleEntry(guid="ccc", type="Vehicle", id=100, name="Tank",
+                        source_path="Vehicles/Tank"),
+        ]
+        gi = _build_guid_index(entries, [], {}, "2026-01-01")
+
+        assert gi.by_id["100"]["items"]["base"] == "aaa"
+        assert gi.by_id["100"]["spawns"]["base"] == "bbb"
+        assert gi.by_id["100"]["vehicles"]["base"] == "ccc"
+
+    def test_by_id_map_source(self):
+        """Map entries should use map safe name as source."""
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.models import BundleEntry
+
+        base = [BundleEntry(guid="aaa", type="Gun", id=100, name="Eaglefire",
+                            source_path="Items/Guns/Eaglefire")]
+        map_entries = [BundleEntry(guid="bbb", type="Food", id=100,
+                                   name="Bread", source_path="Items/Edible/Bread")]
+        gi = _build_guid_index(base, [], {"a6_polaris": (map_entries, [])}, "2026-01-01")
+
+        assert gi.by_id["100"]["items"]["base"] == "aaa"
+        assert gi.by_id["100"]["items"]["a6_polaris"] == "bbb"
+
+    def test_by_id_skips_id_zero(self):
+        """ID 0 is a cosmetics dumping ground and should be excluded from by_id."""
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.models import BundleEntry
+
+        entries = [BundleEntry(guid="aaa", type="Hat", id=0, name="Cool Hat",
+                               source_path="Items/Hats/Cool_Hat")]
+        gi = _build_guid_index(entries, [], {}, "2026-01-01")
+        assert "0" not in gi.by_id
