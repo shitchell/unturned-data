@@ -247,8 +247,15 @@ class TestSyntheticGuids:
         from unturned_data.exporter import _ensure_guids
         from unturned_data.models import BundleEntry
 
-        entries = [BundleEntry(guid="", type="Gun", id=42, name="No GUID Gun",
-                               source_path="Items/Guns/NoGuid")]
+        entries = [
+            BundleEntry(
+                guid="",
+                type="Gun",
+                id=42,
+                name="No GUID Gun",
+                source_path="Items/Guns/NoGuid",
+            )
+        ]
         _ensure_guids(entries, "base")
         assert entries[0].guid.startswith("00000")
         assert len(entries[0].guid) == 32
@@ -257,10 +264,16 @@ class TestSyntheticGuids:
         from unturned_data.exporter import _ensure_guids
         from unturned_data.models import BundleEntry
 
-        e1 = [BundleEntry(guid="", type="Gun", id=42, name="X",
-                          source_path="Items/Guns/X")]
-        e2 = [BundleEntry(guid="", type="Gun", id=42, name="X",
-                          source_path="Items/Guns/X")]
+        e1 = [
+            BundleEntry(
+                guid="", type="Gun", id=42, name="X", source_path="Items/Guns/X"
+            )
+        ]
+        e2 = [
+            BundleEntry(
+                guid="", type="Gun", id=42, name="X", source_path="Items/Guns/X"
+            )
+        ]
         _ensure_guids(e1, "base")
         _ensure_guids(e2, "base")
         assert e1[0].guid == e2[0].guid
@@ -269,7 +282,14 @@ class TestSyntheticGuids:
         from unturned_data.exporter import _ensure_guids
         from unturned_data.models import BundleEntry
 
-        entries = [BundleEntry(guid="realguid123", type="Gun", id=42,
-                               name="Has GUID", source_path="Items/Guns/X")]
+        entries = [
+            BundleEntry(
+                guid="realguid123",
+                type="Gun",
+                id=42,
+                name="Has GUID",
+                source_path="Items/Guns/X",
+            )
+        ]
         _ensure_guids(entries, "base")
         assert entries[0].guid == "realguid123"
