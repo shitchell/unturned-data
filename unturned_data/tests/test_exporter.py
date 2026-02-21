@@ -7,6 +7,7 @@ import pytest
 
 from unturned_data.exporter import (
     SCHEMA_C_FIELDS,
+    SCHEMA_C_FIELDS_WITH_RAW,
     _serialize_entry,
     export_schema_c,
 )
@@ -16,33 +17,46 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 class TestSerializeEntry:
     def test_schema_c_fields_only(self):
-        """Subclass-specific fields should NOT appear at top level."""
-        from unturned_data.categories.items import Gun
+        """Only Schema C fields should appear at top level."""
+        from unturned_data.categories import parse_entry
         from unturned_data.dat_parser import parse_dat_file
         from unturned_data.loader import load_english_dat
 
         fix = FIXTURES / "gun_maplestrike"
         raw = parse_dat_file(list(fix.glob("*.dat"))[0])
         eng = load_english_dat(fix / "English.dat")
-        gun = Gun.from_raw(raw, eng, "Items/Guns/Maplestrike")
-        d = _serialize_entry(gun)
+        entry = parse_entry(raw, eng, "Items/Guns/Maplestrike")
+        d = _serialize_entry(entry)
 
         # Should have Schema C fields
         assert "properties" in d
         assert "english" in d
-        assert "raw" in d
 
-        # "parsed" should NOT be in Schema C output (removed in favor of properties)
+        # raw should NOT be in default output
+        assert "raw" not in d
+
+        # "parsed" should NOT be in Schema C output
         assert "parsed" not in d
 
-        # slot and useable are now base fields, so they SHOULD be at top level
+        # slot and useable are base fields, so they SHOULD be at top level
         assert "slot" in d
         assert "useable" in d
 
-        # Subclass-specific fields should NOT appear at top level
-        assert "caliber" not in d
-        assert "damage" not in d
-        assert "firerate" not in d
+    def test_include_raw_flag(self):
+        """raw should be present when include_raw=True."""
+        from unturned_data.categories import parse_entry
+        from unturned_data.dat_parser import parse_dat_file
+        from unturned_data.loader import load_english_dat
+
+        fix = FIXTURES / "gun_maplestrike"
+        raw = parse_dat_file(list(fix.glob("*.dat"))[0])
+        eng = load_english_dat(fix / "English.dat")
+        entry = parse_entry(raw, eng, "Items/Guns/Maplestrike")
+        d = _serialize_entry(entry, include_raw=True)
+
+        assert "raw" in d
+        assert isinstance(d["raw"], dict)
+        assert "properties" in d
 
     def test_all_schema_c_fields_present(self):
         from unturned_data.models import BundleEntry
@@ -59,6 +73,25 @@ class TestSerializeEntry:
         d = _serialize_entry(e)
         for field in SCHEMA_C_FIELDS:
             assert field in d, f"Missing field: {field}"
+        # raw should NOT be in default output
+        assert "raw" not in d
+
+    def test_all_schema_c_fields_with_raw_present(self):
+        from unturned_data.models import BundleEntry
+
+        e = BundleEntry(
+            guid="abc",
+            type="Gun",
+            id=42,
+            name="Test",
+            source_path="Items/Guns/Test",
+            english={"Name": "Test"},
+            raw={"Type": "Gun"},
+        )
+        d = _serialize_entry(e, include_raw=True)
+        for field in SCHEMA_C_FIELDS_WITH_RAW:
+            assert field in d, f"Missing field: {field}"
+        assert "raw" in d
 
 
 class TestExportSchemaC:
@@ -78,14 +111,29 @@ class TestExportSchemaC:
             assert "guid" in e
             assert "properties" in e
             assert "english" in e
-            assert "raw" in e
             assert "blueprints" in e
             assert "category" in e
+            # raw should NOT be in default output
+            assert "raw" not in e
             # "parsed" should NOT be in Schema C output
             assert "parsed" not in e
             # No subclass-specific top-level fields
             for key in e:
                 assert key in SCHEMA_C_FIELDS, f"Unexpected top-level key: {key}"
+
+    def test_entries_include_raw_when_requested(self, tmp_path):
+        export_schema_c(
+            base_bundles=FIXTURES, map_dirs=[], output_dir=tmp_path,
+            include_raw=True,
+        )
+        entries = json.loads((tmp_path / "base" / "entries.json").read_text())
+        assert isinstance(entries, list)
+        if entries:
+            e = entries[0]
+            assert "raw" in e
+            assert isinstance(e["raw"], dict)
+            for key in e:
+                assert key in SCHEMA_C_FIELDS_WITH_RAW, f"Unexpected key: {key}"
 
     def test_manifest_has_counts(self, tmp_path):
         export_schema_c(base_bundles=FIXTURES, map_dirs=[], output_dir=tmp_path)

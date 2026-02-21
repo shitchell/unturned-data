@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -219,8 +220,10 @@ SCHEMA_C_FIELDS = {
     "blueprints",
     "actions",
     "properties",
-    "raw",
 }
+
+# Extended field set including the raw .dat dict (used with --include-raw)
+SCHEMA_C_FIELDS_WITH_RAW = SCHEMA_C_FIELDS | {"raw"}
 
 
 def discover_maps(server_root: Path) -> list[Path]:
@@ -269,15 +272,20 @@ def _is_map_dir(path: Path) -> bool:
     )
 
 
-def _serialize_entry(entry: BundleEntry) -> dict[str, Any]:
+def _serialize_entry(
+    entry: BundleEntry, include_raw: bool = False
+) -> dict[str, Any]:
     """Serialize a single entry to Schema C dict (only Schema C fields)."""
-    return entry.model_dump(include=SCHEMA_C_FIELDS)
+    fields = SCHEMA_C_FIELDS_WITH_RAW if include_raw else SCHEMA_C_FIELDS
+    return entry.model_dump(include=fields)
 
 
-def _serialize_entries(entries: list[BundleEntry]) -> list[dict[str, Any]]:
+def _serialize_entries(
+    entries: list[BundleEntry], include_raw: bool = False
+) -> list[dict[str, Any]]:
     """Serialize entries sorted by (name, id)."""
     sorted_entries = sorted(entries, key=lambda e: (e.name, e.id))
-    return [_serialize_entry(e) for e in sorted_entries]
+    return [_serialize_entry(e, include_raw=include_raw) for e in sorted_entries]
 
 
 def _collect_assets(bundles_path: Path) -> list[AssetEntry]:
@@ -513,6 +521,9 @@ def export_schema_c(
     map_dirs: list[Path],
     output_dir: Path,
     generator: str = "unturned-data",
+    include_raw: bool = False,
+    strict: bool = False,
+    show_ignored: bool = False,
 ) -> None:
     """Run the full Schema C export pipeline.
 
@@ -522,14 +533,20 @@ def export_schema_c(
             Bundles/, Config.json, Spawns/, etc.).
         output_dir: Where to write the output files.
         generator: Generator name for the manifest.
+        include_raw: If True, include raw .dat dict in output entries.
+        strict: If True, exit with error if uncovered .dat fields are found.
+        show_ignored: If True, print intentionally-ignored fields to stderr.
     """
+    from unturned_data.warnings import FieldCoverageReport
+
     now = datetime.now(timezone.utc).isoformat()
+    report = FieldCoverageReport()
 
     # --- Base entries ---
     base_entries = _parse_entries(base_bundles)
     _ensure_guids(base_entries, "base")
     _resolve_blueprint_ids(base_entries, "base")
-    base_serialized = _serialize_entries(base_entries)
+    base_serialized = _serialize_entries(base_entries, include_raw=include_raw)
     _write_json(output_dir / "base" / "entries.json", base_serialized)
 
     # --- Base assets ---
@@ -568,7 +585,7 @@ def export_schema_c(
         if has_entries:
             _write_json(
                 output_dir / map_prefix / "entries.json",
-                _serialize_entries(map_entries),
+                _serialize_entries(map_entries, include_raw=include_raw),
             )
         if has_assets:
             _write_json(
@@ -606,3 +623,36 @@ def export_schema_c(
         maps=map_manifest,
     )
     _write_json(output_dir / "manifest.json", manifest.model_dump())
+
+    # --- Field coverage warnings ---
+    # Run field coverage report on all entries
+    from unturned_data.models.properties import PROPERTIES_REGISTRY
+
+    all_entries_for_report = list(base_entries)
+    for _safe, (m_entries, _m_assets) in map_data.items():
+        all_entries_for_report.extend(m_entries)
+
+    for entry in all_entries_for_report:
+        props_cls = PROPERTIES_REGISTRY.get(entry.type)
+        consumed = set()
+        if props_cls and hasattr(props_cls, "consumed_keys"):
+            consumed = props_cls.consumed_keys(entry.raw)
+        report.check_entry(entry.type, entry.raw, consumed, props_cls)
+
+    warnings_text = report.format_warnings()
+    if warnings_text:
+        print(warnings_text, file=sys.stderr)
+
+    if show_ignored:
+        from unturned_data.models.properties.base import GLOBAL_IGNORE
+
+        print(
+            f"\nIntentionally ignored fields: {', '.join(sorted(GLOBAL_IGNORE))}",
+            file=sys.stderr,
+        )
+
+    if strict and report.has_uncovered():
+        raise SystemExit(
+            f"Strict mode: {sum(len(f) for f in report.uncovered.values())} "
+            f"uncovered field(s) detected"
+        )

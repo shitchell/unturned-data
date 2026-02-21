@@ -60,6 +60,24 @@ def main(argv: list[str] | None = None) -> None:
         metavar="PATH",
         help="Exclude entries matching path segments.",
     )
+    parser.add_argument(
+        "--include-raw",
+        action="store_true",
+        default=False,
+        help="Include raw .dat dict in JSON output",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        default=False,
+        help="Exit with error if uncovered .dat fields found",
+    )
+    parser.add_argument(
+        "--show-ignored",
+        action="store_true",
+        default=False,
+        help="Print intentionally-ignored fields to stderr",
+    )
     args = parser.parse_args(argv)
 
     server_root: Path = args.server_root.resolve()
@@ -105,6 +123,9 @@ def main(argv: list[str] | None = None) -> None:
             base_bundles=bundles_path,
             map_dirs=selected_maps,
             output_dir=args.output.resolve(),
+            include_raw=args.include_raw,
+            strict=args.strict,
+            show_ignored=args.show_ignored,
         )
         map_names_str = ", ".join(m.name for m in selected_maps) or "(none)"
         print(f"Export complete: {args.output}")
