@@ -14,6 +14,6 @@ Blueprint_0_Build 41
 Blueprint_1_Type Supply
 Blueprint_1_Supply_0_ID 363
 Blueprint_1_Supply_0_Amount 1
-Blueprint_1_Products 1
-Blueprint_1_Product_0_ID 17
-Blueprint_1_Product_0_Amount 5
+Blueprint_1_Outputs 1
+Blueprint_1_Output_0_ID 17
+Blueprint_1_Output_0_Amount 5
