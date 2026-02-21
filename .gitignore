@@ -11,3 +11,7 @@ build/
 .venv/
 venv/
 .worktrees/
+
+# Unturned Data Exports
+exports/
+export/
