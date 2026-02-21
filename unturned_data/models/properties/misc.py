@@ -44,6 +44,7 @@ def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
 # CloudProperties
 # ---------------------------------------------------------------------------
 
+
 class CloudProperties(ItemProperties):
     """Properties for Cloud items (smoke grenades, etc.)."""
 
@@ -57,6 +58,7 @@ class CloudProperties(ItemProperties):
 # ---------------------------------------------------------------------------
 # MapProperties
 # ---------------------------------------------------------------------------
+
 
 class MapProperties(ItemProperties):
     """Properties for Map items."""
@@ -78,6 +80,7 @@ class MapProperties(ItemProperties):
 # KeyProperties
 # ---------------------------------------------------------------------------
 
+
 class KeyProperties(ItemProperties):
     """Properties for Key items."""
 
@@ -94,6 +97,7 @@ class KeyProperties(ItemProperties):
 # FisherProperties
 # ---------------------------------------------------------------------------
 
+
 class FisherProperties(ItemProperties):
     """Properties for Fisher items (fishing rods)."""
 
@@ -108,6 +112,7 @@ class FisherProperties(ItemProperties):
 # FuelProperties
 # ---------------------------------------------------------------------------
 
+
 class FuelProperties(ItemProperties):
     """Properties for Fuel items (gas cans, etc.)."""
 
@@ -121,6 +126,7 @@ class FuelProperties(ItemProperties):
 # ---------------------------------------------------------------------------
 # OpticProperties
 # ---------------------------------------------------------------------------
+
 
 class OpticProperties(ItemProperties):
     """Properties for Optic items (binoculars, etc.)."""
@@ -180,6 +186,7 @@ class RefillProperties(ItemProperties):
 # BoxProperties
 # ---------------------------------------------------------------------------
 
+
 class BoxProperties(ItemProperties):
     """Properties for Box items (mystery boxes, etc.)."""
 
@@ -208,6 +215,7 @@ class BoxProperties(ItemProperties):
 # TireProperties
 # ---------------------------------------------------------------------------
 
+
 class TireProperties(ItemProperties):
     """Properties for Tire items."""
 
@@ -222,46 +230,56 @@ class TireProperties(ItemProperties):
 # Empty property types (no type-specific fields)
 # ---------------------------------------------------------------------------
 
+
 class CompassProperties(ItemProperties):
     """Properties for Compass items."""
+
     pass
 
 
 class DetonatorProperties(ItemProperties):
     """Properties for Detonator items."""
+
     pass
 
 
 class FilterProperties(ItemProperties):
     """Properties for Filter items."""
+
     pass
 
 
 class GrowerProperties(ItemProperties):
     """Properties for Grower items."""
+
     pass
 
 
 class SupplyProperties(ItemProperties):
     """Properties for Supply items."""
+
     pass
 
 
 class ToolProperties(ItemProperties):
     """Properties for Tool items."""
+
     pass
 
 
 class VehicleRepairToolProperties(ItemProperties):
     """Properties for Vehicle_Repair_Tool items."""
+
     pass
 
 
 class ArrestStartProperties(ItemProperties):
     """Properties for Arrest_Start items (handcuffs)."""
+
     pass
 
 
 class ArrestEndProperties(ItemProperties):
     """Properties for Arrest_End items (handcuff keys)."""
+
     pass

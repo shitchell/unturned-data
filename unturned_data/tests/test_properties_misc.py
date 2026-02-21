@@ -318,6 +318,6 @@ class TestMiscRegistry:
     def test_all_misc_registered(self):
         """All 18 misc types should be in the registry."""
         for type_name, cls in _EXPECTED_REGISTRY.items():
-            assert PROPERTIES_REGISTRY.get(type_name) is cls, (
-                f"{type_name} not registered or wrong class"
-            )
+            assert (
+                PROPERTIES_REGISTRY.get(type_name) is cls
+            ), f"{type_name} not registered or wrong class"

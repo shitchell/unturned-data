@@ -81,8 +81,14 @@ def _parse_magazine_replacements(raw: dict[str, Any]) -> list[dict[str, Any]]:
 # ---- Shared damage extraction helpers ----
 
 _DAMAGE_TARGETS = (
-    "player", "zombie", "animal", "barricade", "structure",
-    "vehicle", "resource", "object",
+    "player",
+    "zombie",
+    "animal",
+    "barricade",
+    "structure",
+    "vehicle",
+    "resource",
+    "object",
 )
 
 _PLAYER_MULTIPLIERS = ("skull", "spine", "arm", "leg")
@@ -116,13 +122,20 @@ def _extract_damage_fields(raw: dict[str, Any]) -> dict[str, Any]:
 # GunProperties
 # ---------------------------------------------------------------------------
 
+
 class GunProperties(ItemProperties):
     """Properties specific to Gun items."""
 
     IGNORE: ClassVar[set[str]] = {
-        "Muzzle", "Shell", "Explosion", "BladeIDs", "BladeID",
-        "Allow_Flesh_Fx", "Bypass_Allowed_To_Damage_Player",
-        "Aim_In_Duration", "Spread_Angle_Degrees",
+        "Muzzle",
+        "Shell",
+        "Explosion",
+        "BladeIDs",
+        "BladeID",
+        "Allow_Flesh_Fx",
+        "Bypass_Allowed_To_Damage_Player",
+        "Aim_In_Duration",
+        "Spread_Angle_Degrees",
     }
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = [
         re.compile(r"^Shoot_Quest_Reward_\d+"),
@@ -337,17 +350,13 @@ class GunProperties(ItemProperties):
         fields["ballistic_travel"] = _get_float(raw, "Ballistic_Travel", 10.0)
         fields["ballistic_drop"] = _get_float(raw, "Ballistic_Drop")
         fields["ballistic_force"] = _get_float(raw, "Ballistic_Force")
-        fields["damage_falloff_range"] = _get_float(
-            raw, "Damage_Falloff_Range", 1.0
-        )
+        fields["damage_falloff_range"] = _get_float(raw, "Damage_Falloff_Range", 1.0)
         fields["damage_falloff_multiplier"] = _get_float(
             raw, "Damage_Falloff_Multiplier", 1.0
         )
 
         # Projectile
-        fields["projectile_lifespan"] = _get_float(
-            raw, "Projectile_Lifespan", 30.0
-        )
+        fields["projectile_lifespan"] = _get_float(raw, "Projectile_Lifespan", 30.0)
         fields["projectile_penetrate_buildables"] = _get_bool(
             raw, "Projectile_Penetrate_Buildables"
         )
@@ -379,18 +388,14 @@ class GunProperties(ItemProperties):
         fields["hook_barrel"] = _get_bool(raw, "Hook_Barrel")
 
         # Magazine handling
-        fields["delete_empty_magazines"] = _get_bool(
-            raw, "Delete_Empty_Magazines"
-        )
+        fields["delete_empty_magazines"] = _get_bool(raw, "Delete_Empty_Magazines")
         fields["should_delete_empty_magazines"] = _get_bool(
             raw, "Should_Delete_Empty_Magazines"
         )
         fields["requires_nonzero_attachment_caliber"] = _get_bool(
             raw, "Requires_Nonzero_Attachment_Caliber"
         )
-        fields["allow_magazine_change"] = _get_bool(
-            raw, "Allow_Magazine_Change", True
-        )
+        fields["allow_magazine_change"] = _get_bool(raw, "Allow_Magazine_Change", True)
         fields["unplace"] = _get_float(raw, "Unplace")
         fields["replace"] = _get_float(raw, "Replace")
         fields["ammo_per_shot"] = _get_int(raw, "Ammo_Per_Shot", 1)
@@ -404,23 +409,17 @@ class GunProperties(ItemProperties):
         # Misc
         fields["alert_radius"] = _get_float(raw, "Alert_Radius")
         fields["instakill_headshots"] = _get_bool(raw, "Instakill_Headshots")
-        fields["can_aim_during_sprint"] = _get_bool(
-            raw, "Can_Aim_During_Sprint"
-        )
+        fields["can_aim_during_sprint"] = _get_bool(raw, "Can_Aim_During_Sprint")
         fields["aiming_movement_speed_multiplier"] = _get_float(
             raw, "Aiming_Movement_Speed_Multiplier"
         )
         fields["can_ever_jam"] = _get_bool(raw, "Can_Ever_Jam")
-        fields["jam_quality_threshold"] = _get_float(
-            raw, "Jam_Quality_Threshold", 0.4
-        )
+        fields["jam_quality_threshold"] = _get_float(raw, "Jam_Quality_Threshold", 0.4)
         fields["jam_max_chance"] = _get_float(raw, "Jam_Max_Chance", 0.1)
         fields["unjam_chamber_anim"] = _get_str(
             raw, "Unjam_Chamber_Anim", "UnjamChamber"
         )
-        fields["gunshot_rolloff_distance"] = _get_float(
-            raw, "Gunshot_Rolloff_Distance"
-        )
+        fields["gunshot_rolloff_distance"] = _get_float(raw, "Gunshot_Rolloff_Distance")
         fields["durability"] = _get_float(raw, "Durability")
         fields["wear"] = _get_int(raw, "Wear")
         fields["invulnerable"] = _get_bool(raw, "Invulnerable")
@@ -438,19 +437,35 @@ class GunProperties(ItemProperties):
         keys = super().consumed_keys(raw)
         # Keys that map to differently-named fields
         for remap_key in (
-            "Player_Damage", "Zombie_Damage", "Animal_Damage",
-            "Barricade_Damage", "Structure_Damage", "Vehicle_Damage",
-            "Resource_Damage", "Object_Damage",
-            "Sight", "Tactical", "Grip", "Barrel", "Magazine",
-            "Hook_Sight", "Hook_Tactical", "Hook_Grip", "Hook_Barrel",
-            "Magazine_Calibers", "Attachment_Calibers",
+            "Player_Damage",
+            "Zombie_Damage",
+            "Animal_Damage",
+            "Barricade_Damage",
+            "Structure_Damage",
+            "Vehicle_Damage",
+            "Resource_Damage",
+            "Object_Damage",
+            "Sight",
+            "Tactical",
+            "Grip",
+            "Barrel",
+            "Magazine",
+            "Hook_Sight",
+            "Hook_Tactical",
+            "Hook_Grip",
+            "Hook_Barrel",
+            "Magazine_Calibers",
+            "Attachment_Calibers",
             "Magazine_Replacements",
         ):
             if remap_key in raw:
                 keys.add(remap_key)
         # Indexed entries
-        for prefix in ("Magazine_Caliber", "Attachment_Caliber",
-                        "Magazine_Replacement"):
+        for prefix in (
+            "Magazine_Caliber",
+            "Attachment_Caliber",
+            "Magazine_Replacement",
+        ):
             for key in raw:
                 if key.startswith(prefix + "_"):
                     keys.add(key)
@@ -467,14 +482,24 @@ class GunProperties(ItemProperties):
 # MeleeProperties
 # ---------------------------------------------------------------------------
 
+
 class MeleeProperties(ItemProperties):
     """Properties specific to Melee items."""
 
     IGNORE: ClassVar[set[str]] = {
-        "Explosion", "Allow_Flesh_Fx", "Bypass_Allowed_To_Damage_Player",
-        "ImpactAudioDef", "SpotLight_Range", "SpotLight_Angle",
-        "SpotLight_Intensity", "Spotlight_Color_R", "Spotlight_Color_G",
-        "Spotlight_Color_B", "BladeIDs", "BladeID", "AttackAudioClip",
+        "Explosion",
+        "Allow_Flesh_Fx",
+        "Bypass_Allowed_To_Damage_Player",
+        "ImpactAudioDef",
+        "SpotLight_Range",
+        "SpotLight_Angle",
+        "SpotLight_Intensity",
+        "Spotlight_Color_R",
+        "Spotlight_Color_G",
+        "Spotlight_Color_B",
+        "BladeIDs",
+        "BladeID",
+        "AttackAudioClip",
     }
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = [
         re.compile(r"^BladeID_\d+"),
@@ -555,9 +580,7 @@ class MeleeProperties(ItemProperties):
         fields["stun_zombie_never"] = _get_bool(raw, "Stun_Zombie_Never")
 
         # Damage mods
-        fields["player_damage_bleeding"] = _get_str(
-            raw, "Player_Damage_Bleeding"
-        )
+        fields["player_damage_bleeding"] = _get_str(raw, "Player_Damage_Bleeding")
         fields["player_damage_bones"] = _get_str(raw, "Player_Damage_Bones")
         fields["player_damage_food"] = _get_float(raw, "Player_Damage_Food")
         fields["player_damage_water"] = _get_float(raw, "Player_Damage_Water")
@@ -572,9 +595,14 @@ class MeleeProperties(ItemProperties):
     def consumed_keys(cls, raw: dict[str, Any]) -> set[str]:
         keys = super().consumed_keys(raw)
         for remap_key in (
-            "Player_Damage", "Zombie_Damage", "Animal_Damage",
-            "Barricade_Damage", "Structure_Damage", "Vehicle_Damage",
-            "Resource_Damage", "Object_Damage",
+            "Player_Damage",
+            "Zombie_Damage",
+            "Animal_Damage",
+            "Barricade_Damage",
+            "Structure_Damage",
+            "Vehicle_Damage",
+            "Resource_Damage",
+            "Object_Damage",
         ):
             if remap_key in raw:
                 keys.add(remap_key)
@@ -590,11 +618,14 @@ class MeleeProperties(ItemProperties):
 # ThrowableProperties
 # ---------------------------------------------------------------------------
 
+
 class ThrowableProperties(ItemProperties):
     """Properties specific to Throwable items."""
 
     IGNORE: ClassVar[set[str]] = {
-        "Explosion", "Allow_Flesh_Fx", "Bypass_Allowed_To_Damage_Player",
+        "Explosion",
+        "Allow_Flesh_Fx",
+        "Bypass_Allowed_To_Damage_Player",
     }
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = []
 
@@ -652,15 +683,9 @@ class ThrowableProperties(ItemProperties):
         fields["sticky"] = _get_bool(raw, "Sticky")
         fields["explode_on_impact"] = _get_bool(raw, "Explode_On_Impact")
         fields["fuse_length"] = _get_float(raw, "Fuse_Length")
-        fields["explosion_launch_speed"] = _get_float(
-            raw, "Explosion_Launch_Speed"
-        )
-        fields["strong_throw_force"] = _get_float(
-            raw, "Strong_Throw_Force", 1100.0
-        )
-        fields["weak_throw_force"] = _get_float(
-            raw, "Weak_Throw_Force", 600.0
-        )
+        fields["explosion_launch_speed"] = _get_float(raw, "Explosion_Launch_Speed")
+        fields["strong_throw_force"] = _get_float(raw, "Strong_Throw_Force", 1100.0)
+        fields["weak_throw_force"] = _get_float(raw, "Weak_Throw_Force", 600.0)
         fields["boost_throw_force_multiplier"] = _get_float(
             raw, "Boost_Throw_Force_Multiplier", 1.4
         )
@@ -674,9 +699,14 @@ class ThrowableProperties(ItemProperties):
     def consumed_keys(cls, raw: dict[str, Any]) -> set[str]:
         keys = super().consumed_keys(raw)
         for remap_key in (
-            "Player_Damage", "Zombie_Damage", "Animal_Damage",
-            "Barricade_Damage", "Structure_Damage", "Vehicle_Damage",
-            "Resource_Damage", "Object_Damage",
+            "Player_Damage",
+            "Zombie_Damage",
+            "Animal_Damage",
+            "Barricade_Damage",
+            "Structure_Damage",
+            "Vehicle_Damage",
+            "Resource_Damage",
+            "Object_Damage",
         ):
             if remap_key in raw:
                 keys.add(remap_key)

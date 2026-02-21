@@ -48,8 +48,14 @@ def _get_str(raw: dict[str, Any], key: str, default: str = "") -> str:
 
 # Damage targets shared by Trap and Charge
 _DAMAGE_TARGETS = (
-    "player", "zombie", "animal", "barricade", "structure",
-    "vehicle", "resource", "object",
+    "player",
+    "zombie",
+    "animal",
+    "barricade",
+    "structure",
+    "vehicle",
+    "resource",
+    "object",
 )
 
 
@@ -62,24 +68,29 @@ def _extract_damage_fields(raw: dict[str, Any]) -> dict[str, Any]:
     return fields
 
 
-_DAMAGE_REMAP_KEYS = tuple(
-    f"{t.capitalize()}_Damage" for t in _DAMAGE_TARGETS
-)
+_DAMAGE_REMAP_KEYS = tuple(f"{t.capitalize()}_Damage" for t in _DAMAGE_TARGETS)
 
 
 # ---------------------------------------------------------------------------
 # BarricadeProperties (base)
 # ---------------------------------------------------------------------------
 
+
 class BarricadeProperties(ItemProperties):
     """Base properties for all barricade items."""
 
     IGNORE: ClassVar[set[str]] = {
-        "Explosion", "Has_Clip_Prefab", "PlacementPreviewPrefab",
-        "Eligible_For_Pooling", "Use_Water_Height_Transparent_Sort",
-        "PlacementAudioClip", "Should_Close_When_Outside_Range",
-        "Items_Recovered_On_Salvage", "SalvageItem",
-        "Items_Dropped_On_Destroy", "Item_Dropped_On_Destroy",
+        "Explosion",
+        "Has_Clip_Prefab",
+        "PlacementPreviewPrefab",
+        "Eligible_For_Pooling",
+        "Use_Water_Height_Transparent_Sort",
+        "PlacementAudioClip",
+        "Should_Close_When_Outside_Range",
+        "Items_Recovered_On_Salvage",
+        "SalvageItem",
+        "Items_Dropped_On_Destroy",
+        "Item_Dropped_On_Destroy",
     }
 
     health: int = 0
@@ -119,9 +130,7 @@ class BarricadeProperties(ItemProperties):
         fields["unrepairable"] = _get_bool(raw, "Unrepairable")
         fields["proof_explosion"] = _get_bool(raw, "Proof_Explosion")
         fields["unpickupable"] = _get_bool(raw, "Unpickupable")
-        fields["bypass_pickup_ownership"] = _get_bool(
-            raw, "Bypass_Pickup_Ownership"
-        )
+        fields["bypass_pickup_ownership"] = _get_bool(raw, "Bypass_Pickup_Ownership")
         fields["allow_placement_inside_clip_volumes"] = _get_bool(
             raw, "Allow_Placement_Inside_Clip_Volumes"
         )
@@ -140,6 +149,7 @@ class BarricadeProperties(ItemProperties):
 # ---------------------------------------------------------------------------
 # StorageProperties
 # ---------------------------------------------------------------------------
+
 
 class StorageProperties(BarricadeProperties):
     """Properties for Storage barricades (crates, lockers, etc.)."""
@@ -162,12 +172,14 @@ class StorageProperties(BarricadeProperties):
 # SentryProperties
 # ---------------------------------------------------------------------------
 
+
 class SentryProperties(StorageProperties):
     """Properties for Sentry barricades."""
 
     IGNORE: ClassVar[set[str]] = {
         *StorageProperties.IGNORE,
-        "Target_Acquired_Effect", "Target_Lost_Effect",
+        "Target_Acquired_Effect",
+        "Target_Lost_Effect",
     }
 
     mode: str = ""
@@ -194,12 +206,14 @@ class SentryProperties(StorageProperties):
 # FarmProperties
 # ---------------------------------------------------------------------------
 
+
 class FarmProperties(BarricadeProperties):
     """Properties for Farm barricades (planter boxes, etc.)."""
 
     IGNORE: ClassVar[set[str]] = {
         *BarricadeProperties.IGNORE,
-        "Grow_SpawnTable", "Ignore_Soil_Restrictions",
+        "Grow_SpawnTable",
+        "Ignore_Soil_Restrictions",
     }
 
     growth: int = 0
@@ -223,6 +237,7 @@ class FarmProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # GeneratorProperties
 # ---------------------------------------------------------------------------
+
 
 class GeneratorProperties(BarricadeProperties):
     """Properties for Generator barricades."""
@@ -252,6 +267,7 @@ class GeneratorProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # TrapProperties
 # ---------------------------------------------------------------------------
+
 
 class TrapProperties(BarricadeProperties):
     """Properties for Trap barricades (barbed wire, landmines, etc.)."""
@@ -285,9 +301,7 @@ class TrapProperties(BarricadeProperties):
         fields.update(_extract_damage_fields(raw))
         fields["trap_setup_delay"] = _get_float(raw, "Trap_Setup_Delay", 0.25)
         fields["trap_cooldown"] = _get_float(raw, "Trap_Cooldown")
-        fields["explosion_launch_speed"] = _get_float(
-            raw, "Explosion_Launch_Speed"
-        )
+        fields["explosion_launch_speed"] = _get_float(raw, "Explosion_Launch_Speed")
         fields["broken"] = _get_bool(raw, "Broken")
         fields["explosive"] = _get_bool(raw, "Explosive")
         fields["damage_tires"] = _get_bool(raw, "Damage_Tires")
@@ -305,6 +319,7 @@ class TrapProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # BeaconProperties
 # ---------------------------------------------------------------------------
+
 
 class BeaconProperties(BarricadeProperties):
     """Properties for Beacon barricades (horde beacons)."""
@@ -331,6 +346,7 @@ class BeaconProperties(BarricadeProperties):
 # TankProperties
 # ---------------------------------------------------------------------------
 
+
 class TankProperties(BarricadeProperties):
     """Properties for Tank barricades (water/fuel tanks)."""
 
@@ -349,6 +365,7 @@ class TankProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # ChargeProperties
 # ---------------------------------------------------------------------------
+
 
 class ChargeProperties(BarricadeProperties):
     """Properties for Charge barricades (remote detonators)."""
@@ -375,9 +392,7 @@ class ChargeProperties(BarricadeProperties):
         fields = base.model_dump()
         fields["range2"] = _get_float(raw, "Range2")
         fields.update(_extract_damage_fields(raw))
-        fields["explosion_launch_speed"] = _get_float(
-            raw, "Explosion_Launch_Speed"
-        )
+        fields["explosion_launch_speed"] = _get_float(raw, "Explosion_Launch_Speed")
         return cls(**fields)
 
     @classmethod
@@ -392,6 +407,7 @@ class ChargeProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # LibraryProperties
 # ---------------------------------------------------------------------------
+
 
 class LibraryProperties(BarricadeProperties):
     """Properties for Library barricades."""
@@ -411,6 +427,7 @@ class LibraryProperties(BarricadeProperties):
 # ---------------------------------------------------------------------------
 # OilPumpProperties
 # ---------------------------------------------------------------------------
+
 
 class OilPumpProperties(BarricadeProperties):
     """Properties for Oil Pump barricades."""

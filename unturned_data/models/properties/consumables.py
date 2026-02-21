@@ -52,18 +52,30 @@ class ConsumableProperties(ItemProperties):
     """Properties shared by Food, Medical, and Water items."""
 
     IGNORE: ClassVar[set[str]] = {
-        "Explosion", "Allow_Flesh_Fx", "Bypass_Allowed_To_Damage_Player",
-        "BladeIDs", "BladeID",
-        "Player_Skull_Multiplier", "Player_Spine_Multiplier",
-        "Player_Arm_Multiplier", "Player_Leg_Multiplier",
-        "Zombie_Skull_Multiplier", "Zombie_Spine_Multiplier",
-        "Zombie_Arm_Multiplier", "Zombie_Leg_Multiplier",
-        "Animal_Skull_Multiplier", "Animal_Spine_Multiplier",
+        "Explosion",
+        "Allow_Flesh_Fx",
+        "Bypass_Allowed_To_Damage_Player",
+        "BladeIDs",
+        "BladeID",
+        "Player_Skull_Multiplier",
+        "Player_Spine_Multiplier",
+        "Player_Arm_Multiplier",
+        "Player_Leg_Multiplier",
+        "Zombie_Skull_Multiplier",
+        "Zombie_Spine_Multiplier",
+        "Zombie_Arm_Multiplier",
+        "Zombie_Leg_Multiplier",
+        "Animal_Skull_Multiplier",
+        "Animal_Spine_Multiplier",
         "Animal_Leg_Multiplier",
-        "Player_Damage_Bleeding", "Player_Damage_Bones",
-        "Player_Damage_Food", "Player_Damage_Water",
-        "Player_Damage_Virus", "Player_Damage_Hallucination",
-        "Stun_Zombie_Always", "Stun_Zombie_Never",
+        "Player_Damage_Bleeding",
+        "Player_Damage_Bones",
+        "Player_Damage_Food",
+        "Player_Damage_Water",
+        "Player_Damage_Virus",
+        "Player_Damage_Hallucination",
+        "Stun_Zombie_Always",
+        "Stun_Zombie_Never",
         "ConsumeAudioClip",
     }
     IGNORE_PATTERNS: ClassVar[list[re.Pattern]] = [
@@ -130,8 +142,14 @@ class ConsumableProperties(ItemProperties):
 
         # Damage per target
         _DAMAGE_TARGETS = (
-            "player", "zombie", "animal", "barricade", "structure",
-            "vehicle", "resource", "object",
+            "player",
+            "zombie",
+            "animal",
+            "barricade",
+            "structure",
+            "vehicle",
+            "resource",
+            "object",
         )
         for target in _DAMAGE_TARGETS:
             key = f"{target.capitalize()}_Damage"
@@ -166,9 +184,14 @@ class ConsumableProperties(ItemProperties):
         keys = super().consumed_keys(raw)
         # Damage keys use Target_Damage format, not Damage_Target
         for remap_key in (
-            "Player_Damage", "Zombie_Damage", "Animal_Damage",
-            "Barricade_Damage", "Structure_Damage", "Vehicle_Damage",
-            "Resource_Damage", "Object_Damage",
+            "Player_Damage",
+            "Zombie_Damage",
+            "Animal_Damage",
+            "Barricade_Damage",
+            "Structure_Damage",
+            "Vehicle_Damage",
+            "Resource_Damage",
+            "Object_Damage",
         ):
             if remap_key in raw:
                 keys.add(remap_key)

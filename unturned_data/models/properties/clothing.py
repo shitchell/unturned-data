@@ -72,9 +72,7 @@ class ClothingProperties(ItemProperties):
         fields["movement_speed_multiplier"] = _get_float(
             raw, "Movement_Speed_Multiplier", 1.0
         )
-        fields["visible_on_ragdoll"] = _get_bool(
-            raw, "Visible_On_Ragdoll", True
-        )
+        fields["visible_on_ragdoll"] = _get_bool(raw, "Visible_On_Ragdoll", True)
         fields["hair_visible"] = _get_bool(raw, "Hair_Visible", True)
         fields["beard_visible"] = _get_bool(raw, "Beard_Visible", True)
         return fields

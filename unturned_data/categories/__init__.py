@@ -4,6 +4,7 @@ Category model registry and type dispatch.
 Maps Unturned Type values to the appropriate model class and provides
 ``parse_entry()`` for dispatching raw data to the correct model.
 """
+
 from __future__ import annotations
 
 from typing import Any
