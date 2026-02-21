@@ -23,6 +23,7 @@ from unturned_data.models.blueprint import (
     format_blueprint_ingredients,
     format_blueprint_workstations,
 )
+from unturned_data.models.properties import ItemProperties
 
 __all__ = [
     "Action",
@@ -33,6 +34,7 @@ __all__ = [
     "ConsumableStats",
     "CraftingBlacklist",
     "DamageStats",
+    "ItemProperties",
     "SpawnTable",
     "SpawnTableEntry",
     "StorageStats",

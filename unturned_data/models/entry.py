@@ -146,6 +146,7 @@ class BundleEntry(BaseModel):
     english: dict[str, str] = {}
     actions: list[Action] = []
     blueprints: list[Blueprint] = []
+    properties: dict[str, Any] = {}
 
     @computed_field
     @property

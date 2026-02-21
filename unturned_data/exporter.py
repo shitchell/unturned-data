@@ -219,6 +219,7 @@ SCHEMA_C_FIELDS = {
     "parsed",
     "blueprints",
     "actions",
+    "properties",
     "raw",
 }
 

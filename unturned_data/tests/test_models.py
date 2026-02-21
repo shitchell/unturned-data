@@ -581,6 +581,7 @@ class TestBundleEntrySchemaC:
             "english",
             "raw",
             "blueprints",
+            "properties",
             "category",
             "parsed",
         }
