@@ -39,9 +39,22 @@ class TestGlobalHandled:
 
     @pytest.mark.parametrize(
         "key",
-        ["GUID", "ID", "Type", "Rarity", "Size_X", "Size_Y", "Useable", "Slot",
-         "Can_Use_Underwater", "Equipable_Movement_Speed_Multiplier",
-         "Should_Drop_On_Death", "Allow_Manual_Drop", "Blueprints", "Actions"],
+        [
+            "GUID",
+            "ID",
+            "Type",
+            "Rarity",
+            "Size_X",
+            "Size_Y",
+            "Useable",
+            "Slot",
+            "Can_Use_Underwater",
+            "Equipable_Movement_Speed_Multiplier",
+            "Should_Drop_On_Death",
+            "Allow_Manual_Drop",
+            "Blueprints",
+            "Actions",
+        ],
     )
     def test_global_handled_keys(self, key):
         """Each key in GLOBAL_HANDLED is recognized as globally handled."""
@@ -49,7 +62,12 @@ class TestGlobalHandled:
 
     @pytest.mark.parametrize(
         "key",
-        ["Blueprint_0_Type", "Blueprint_12_Outputs", "Action_0_Type", "Action_3_Source"],
+        [
+            "Blueprint_0_Type",
+            "Blueprint_12_Outputs",
+            "Action_0_Type",
+            "Action_3_Source",
+        ],
     )
     def test_global_handled_patterns(self, key):
         """Blueprint_N_* and Action_N_* keys match GLOBAL_HANDLED_PATTERNS."""
@@ -66,8 +84,15 @@ class TestGlobalIgnore:
 
     @pytest.mark.parametrize(
         "key",
-        ["Size_Z", "Size2_Z", "Pro", "Quality_Min", "Quality_Max",
-         "Bypass_Hash_Verification", "WearAudio"],
+        [
+            "Size_Z",
+            "Size2_Z",
+            "Pro",
+            "Quality_Min",
+            "Quality_Max",
+            "Bypass_Hash_Verification",
+            "WearAudio",
+        ],
     )
     def test_global_ignore_keys(self, key):
         """Keys in GLOBAL_IGNORE are present in the set."""
