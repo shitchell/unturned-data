@@ -571,6 +571,12 @@ class TestBundleEntrySchemaC:
             "rarity",
             "size_x",
             "size_y",
+            "useable",
+            "slot",
+            "can_use_underwater",
+            "equipable_movement_speed_multiplier",
+            "should_drop_on_death",
+            "allow_manual_drop",
             "source_path",
             "english",
             "raw",
@@ -749,3 +755,57 @@ class TestAction:
             "text": "",
             "tooltip": "",
         }
+
+
+# ---------------------------------------------------------------------------
+# TestBaseFields
+# ---------------------------------------------------------------------------
+class TestBaseFields:
+    """Tests for common ItemAsset base fields on BundleEntry."""
+
+    def test_base_fields_gun(self):
+        """Gun fixture should have useable='Gun', slot='Primary'."""
+        raw, english = _load_fixture("gun_maplestrike")
+        entry = BundleEntry.from_raw(raw, english, "gun_maplestrike")
+        assert entry.useable == "Gun"
+        assert entry.slot == "Primary"
+        assert entry.can_use_underwater is True
+        assert entry.equipable_movement_speed_multiplier == 1.0
+        assert entry.should_drop_on_death is True
+        assert entry.allow_manual_drop is True
+
+    def test_base_fields_food(self):
+        """Food fixture should have useable='Consumeable'."""
+        raw, english = _load_fixture("food_beans")
+        entry = BundleEntry.from_raw(raw, english, "food_beans")
+        assert entry.useable == "Consumeable"
+        assert entry.slot == ""
+
+    def test_base_fields_defaults(self):
+        """Minimal entry should have correct defaults for all base fields."""
+        entry = BundleEntry()
+        assert entry.useable == ""
+        assert entry.slot == ""
+        assert entry.can_use_underwater is True
+        assert entry.equipable_movement_speed_multiplier == 1.0
+        assert entry.should_drop_on_death is True
+        assert entry.allow_manual_drop is True
+
+    def test_base_fields_in_model_dump(self):
+        """Base fields should appear in model_dump() output."""
+        raw, english = _load_fixture("gun_maplestrike")
+        entry = BundleEntry.from_raw(raw, english, "gun_maplestrike")
+        d = entry.model_dump()
+        assert d["useable"] == "Gun"
+        assert d["slot"] == "Primary"
+        assert d["can_use_underwater"] is True
+        assert d["equipable_movement_speed_multiplier"] == 1.0
+        assert d["should_drop_on_death"] is True
+        assert d["allow_manual_drop"] is True
+
+    def test_base_fields_melee(self):
+        """Melee fixture should have useable='Melee', slot='Secondary'."""
+        raw, english = _load_fixture("melee_katana")
+        entry = BundleEntry.from_raw(raw, english, "melee_katana")
+        assert entry.useable == "Melee"
+        assert entry.slot == "Secondary"

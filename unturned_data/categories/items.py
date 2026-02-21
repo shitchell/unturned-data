@@ -30,7 +30,6 @@ class Gun(BundleEntry):
 
     damage: DamageStats | None = None
 
-    slot: str = ""
     caliber: int = 0
     firerate: int = 0
     range: float = 0
@@ -67,7 +66,6 @@ class Gun(BundleEntry):
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
 
-            slot=str(raw.get("Slot", "")),
             caliber=int(raw.get("Caliber", 0)),
             firerate=int(raw.get("Firerate", 0)),
             range=float(raw.get("Range", 0)),
@@ -84,7 +82,6 @@ class Gun(BundleEntry):
     @property
     def parsed(self) -> dict[str, Any]:
         d: dict[str, Any] = {
-            "slot": self.slot,
             "caliber": self.caliber,
             "firerate": self.firerate,
             "range": self.range,
@@ -150,7 +147,6 @@ class MeleeWeapon(BundleEntry):
 
     damage: DamageStats | None = None
 
-    slot: str = ""
     range: float = 0
     strength: float = 0
     stamina: float = 0
@@ -168,7 +164,6 @@ class MeleeWeapon(BundleEntry):
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
 
-            slot=str(raw.get("Slot", "")),
             range=float(raw.get("Range", 0)),
             strength=float(raw.get("Strength", 0)),
             stamina=float(raw.get("Stamina", 0)),
@@ -179,7 +174,6 @@ class MeleeWeapon(BundleEntry):
     @property
     def parsed(self) -> dict[str, Any]:
         d: dict[str, Any] = {
-            "slot": self.slot,
             "range": self.range,
             "strength": self.strength,
             "stamina": self.stamina,

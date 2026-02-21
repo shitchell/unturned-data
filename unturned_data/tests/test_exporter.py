@@ -32,14 +32,17 @@ class TestSerializeEntry:
         assert "english" in d
         assert "raw" in d
 
-        # Should NOT have subclass fields at top level
-        assert "slot" not in d
+        # slot and useable are now base fields, so they SHOULD be at top level
+        assert "slot" in d
+        assert "useable" in d
+
+        # Subclass-specific fields should NOT appear at top level
         assert "caliber" not in d
         assert "damage" not in d
         assert "firerate" not in d
 
-        # parsed should have them
-        assert "slot" in d["parsed"]
+        # parsed should have subclass-specific fields (but not slot)
+        assert "slot" not in d["parsed"]
         assert "firerate" in d["parsed"]
 
     def test_all_schema_c_fields_present(self):

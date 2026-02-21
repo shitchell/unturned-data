@@ -113,7 +113,7 @@ class TestGun:
         raw, english = _load_fixture("gun_maplestrike")
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         d = gun.model_dump()
-        assert d["parsed"]["slot"] == "Primary"
+        assert d["slot"] == "Primary"
         assert d["parsed"]["firerate"] == 5
         assert d["parsed"]["range"] == 200
         assert d["parsed"]["damage"]["player"] == 40
@@ -569,7 +569,7 @@ class TestParsedComputedField:
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         p = gun.parsed
         expected = {
-            "slot", "caliber", "firerate", "range", "fire_modes",
+            "caliber", "firerate", "range", "fire_modes",
             "hooks", "ammo_min", "ammo_max", "durability",
             "spread_aim", "spread_angle", "damage",
         }
@@ -581,7 +581,7 @@ class TestParsedComputedField:
         raw, english = _load_fixture("melee_katana")
         melee = MeleeWeapon.from_raw(raw, english, "melee_katana")
         p = melee.parsed
-        expected = {"slot", "range", "strength", "stamina", "durability", "damage"}
+        expected = {"range", "strength", "stamina", "durability", "damage"}
         assert set(p.keys()) == expected
         assert p["damage"]["player"] == 50
 
@@ -691,5 +691,5 @@ class TestParsedComputedField:
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         d = gun.model_dump()
         assert "parsed" in d
-        assert d["parsed"]["slot"] == "Primary"
+        assert d["slot"] == "Primary"
         assert d["parsed"]["firerate"] == 5

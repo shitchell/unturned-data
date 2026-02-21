@@ -135,6 +135,12 @@ class BundleEntry(BaseModel):
     rarity: str = ""
     size_x: int = 0
     size_y: int = 0
+    useable: str = ""
+    slot: str = ""
+    can_use_underwater: bool = True
+    equipable_movement_speed_multiplier: float = 1.0
+    should_drop_on_death: bool = True
+    allow_manual_drop: bool = True
     source_path: str = ""
     raw: dict[str, Any] = {}
     english: dict[str, str] = {}
@@ -169,6 +175,14 @@ class BundleEntry(BaseModel):
             rarity=str(raw.get("Rarity", "")),
             size_x=int(raw.get("Size_X", 0)),
             size_y=int(raw.get("Size_Y", 0)),
+            useable=str(raw.get("Useable", "")),
+            slot=str(raw.get("Slot", "")),
+            can_use_underwater=bool(raw.get("Can_Use_Underwater", True)),
+            equipable_movement_speed_multiplier=float(
+                raw.get("Equipable_Movement_Speed_Multiplier", 1.0)
+            ),
+            should_drop_on_death=bool(raw.get("Should_Drop_On_Death", True)),
+            allow_manual_drop=bool(raw.get("Allow_Manual_Drop", True)),
             source_path=source_path,
             raw=raw,
             english=english,

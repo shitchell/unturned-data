@@ -196,11 +196,18 @@ SCHEMA_C_FIELDS = {
     "rarity",
     "size_x",
     "size_y",
+    "useable",
+    "slot",
+    "can_use_underwater",
+    "equipable_movement_speed_multiplier",
+    "should_drop_on_death",
+    "allow_manual_drop",
     "source_path",
     "category",
     "english",
     "parsed",
     "blueprints",
+    "actions",
     "raw",
 }
 
