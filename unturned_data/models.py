@@ -202,7 +202,7 @@ class Blueprint(BaseModel):
             "Supply": "Craft",
             "Repair": "Repair",
             "Ammo": "Craft",
-            "Tool": "Craft",
+            "Tool": "Salvage",
             "Apparel": "Craft",
             "Refill": "Craft",
         }

@@ -306,6 +306,17 @@ class TestBlueprint:
         bps = Blueprint.list_from_raw(raw)
         assert bps[0].outputs == ["this"]
 
+    def test_legacy_tool_type_is_salvage(self):
+        """Type Tool blueprints should be classified as Salvage."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Tool",
+            "Blueprint_0_Output_0_ID": 36011,
+            "Blueprint_0_Output_0_Amount": 3,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].name == "Salvage"
+
     def test_legacy_integer_zero_returns_empty(self):
         """Blueprints 0 should return empty list."""
         raw = {"Blueprints": 0}
