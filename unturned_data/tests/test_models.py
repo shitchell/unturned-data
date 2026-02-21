@@ -3,6 +3,7 @@ Tests for shared stat dataclasses and base BundleEntry model.
 
 Covers: DamageStats, ConsumableStats, StorageStats, Blueprint, BundleEntry.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -472,7 +473,10 @@ class TestBundleEntry:
         assert entry.type == "Gun"
         assert entry.id == 363
         assert entry.name == "Maplestrike"
-        assert entry.description == "Canadian assault rifle chambered in Military ammunition."
+        assert (
+            entry.description
+            == "Canadian assault rifle chambered in Military ammunition."
+        )
         assert entry.rarity == "Epic"
         assert entry.size_x == 4
         assert entry.size_y == 2
@@ -557,9 +561,20 @@ class TestBundleEntrySchemaC:
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
         d = entry.model_dump()
         expected_keys = {
-            "guid", "type", "id", "name", "description",
-            "rarity", "size_x", "size_y", "source_path",
-            "english", "raw", "blueprints", "category", "parsed",
+            "guid",
+            "type",
+            "id",
+            "name",
+            "description",
+            "rarity",
+            "size_x",
+            "size_y",
+            "source_path",
+            "english",
+            "raw",
+            "blueprints",
+            "category",
+            "parsed",
         }
         assert expected_keys == set(d.keys())
 
@@ -612,7 +627,6 @@ class TestBundleEntrySchemaC:
         assert d["category"] == []
 
 
-
 # ---------------------------------------------------------------------------
 # TestSpawnTableSchemaC
 # ---------------------------------------------------------------------------
@@ -626,10 +640,15 @@ class TestSpawnTableSchemaC:
 
     def test_spawn_table_model_dump(self):
         from unturned_data.models import SpawnTable, SpawnTableEntry
+
         entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
         table = SpawnTable(
-            guid="abc", type="Spawn", id=1, name="Test",
-            source_path="Spawns/Test", table_entries=entries,
+            guid="abc",
+            type="Spawn",
+            id=1,
+            name="Test",
+            source_path="Spawns/Test",
+            table_entries=entries,
         )
         d = table.model_dump()
         assert "table_entries" in d

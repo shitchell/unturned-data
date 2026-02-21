@@ -182,12 +182,14 @@ def _parse_modern_conditions(bp_raw: dict[str, Any]) -> list[BlueprintCondition]
     for cond in raw_conditions:
         if not isinstance(cond, dict):
             continue
-        result.append(BlueprintCondition(
-            type=str(cond.get("Type", "")),
-            value=cond.get("Value"),
-            logic=str(cond.get("Logic", "")),
-            id=str(cond.get("ID", "")),
-        ))
+        result.append(
+            BlueprintCondition(
+                type=str(cond.get("Type", "")),
+                value=cond.get("Value"),
+                logic=str(cond.get("Logic", "")),
+                id=str(cond.get("ID", "")),
+            )
+        )
     return result
 
 
@@ -200,12 +202,14 @@ def _parse_modern_rewards(bp_raw: dict[str, Any]) -> list[BlueprintReward]:
     for rew in raw_rewards:
         if not isinstance(rew, dict):
             continue
-        result.append(BlueprintReward(
-            type=str(rew.get("Type", "")),
-            id=str(rew.get("ID", "")),
-            value=rew.get("Value"),
-            modification=str(rew.get("Modification", "")),
-        ))
+        result.append(
+            BlueprintReward(
+                type=str(rew.get("Type", "")),
+                id=str(rew.get("ID", "")),
+                value=rew.get("Value"),
+                modification=str(rew.get("Modification", "")),
+            )
+        )
     return result
 
 
@@ -220,18 +224,18 @@ def _parse_legacy_conditions(
     result: list[BlueprintCondition] = []
     for j in range(count):
         cprefix = f"{prefix}Condition_{j}_"
-        result.append(BlueprintCondition(
-            type=str(raw.get(f"{cprefix}Type", "")),
-            value=raw.get(f"{cprefix}Value"),
-            logic=str(raw.get(f"{cprefix}Logic", "")),
-            id=str(raw.get(f"{cprefix}ID", "")),
-        ))
+        result.append(
+            BlueprintCondition(
+                type=str(raw.get(f"{cprefix}Type", "")),
+                value=raw.get(f"{cprefix}Value"),
+                logic=str(raw.get(f"{cprefix}Logic", "")),
+                id=str(raw.get(f"{cprefix}ID", "")),
+            )
+        )
     return result
 
 
-def _parse_legacy_rewards(
-    raw: dict[str, Any], prefix: str
-) -> list[BlueprintReward]:
+def _parse_legacy_rewards(raw: dict[str, Any], prefix: str) -> list[BlueprintReward]:
     """Parse Blueprint_{i}_Reward_{j}_* entries from legacy format."""
     count = raw.get(f"{prefix}Rewards")
     if count is None:
@@ -240,12 +244,14 @@ def _parse_legacy_rewards(
     result: list[BlueprintReward] = []
     for j in range(count):
         rprefix = f"{prefix}Reward_{j}_"
-        result.append(BlueprintReward(
-            type=str(raw.get(f"{rprefix}Type", "")),
-            id=str(raw.get(f"{rprefix}ID", "")),
-            value=raw.get(f"{rprefix}Value"),
-            modification=str(raw.get(f"{rprefix}Modification", "")),
-        ))
+        result.append(
+            BlueprintReward(
+                type=str(raw.get(f"{rprefix}Type", "")),
+                id=str(raw.get(f"{rprefix}ID", "")),
+                value=raw.get(f"{rprefix}Value"),
+                modification=str(raw.get(f"{rprefix}Modification", "")),
+            )
+        )
     return result
 
 
