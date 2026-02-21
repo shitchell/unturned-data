@@ -1,6 +1,7 @@
 """
 Blueprint model and formatting helpers for Unturned crafting data.
 """
+
 from __future__ import annotations
 
 import re
@@ -92,9 +93,7 @@ class Blueprint(BaseModel):
 
             tool_id = raw.get(f"{prefix}Tool")
             if tool_id is not None:
-                inputs.append(
-                    {"ID": str(tool_id), "Amount": 1, "Delete": False}
-                )
+                inputs.append({"ID": str(tool_id), "Amount": 1, "Delete": False})
 
             outputs: list[Any] = []
             j = 0
@@ -116,14 +115,16 @@ class Blueprint(BaseModel):
             skill_level = int(raw.get(f"{prefix}Level", 0))
             build = str(raw.get(f"{prefix}Build", ""))
 
-            results.append(Blueprint(
-                name=name,
-                inputs=inputs,
-                outputs=outputs,
-                skill=skill,
-                skill_level=skill_level,
-                build=build,
-            ))
+            results.append(
+                Blueprint(
+                    name=name,
+                    inputs=inputs,
+                    outputs=outputs,
+                    skill=skill,
+                    skill_level=skill_level,
+                    build=build,
+                )
+            )
 
         return results
 
@@ -197,10 +198,7 @@ def format_blueprint_ingredients(
     blueprints: list[Blueprint],
     guid_map: dict[str, str],
 ) -> str:
-    crafting = [
-        bp for bp in blueprints
-        if bp.name not in _SKIP_BLUEPRINT_NAMES
-    ]
+    crafting = [bp for bp in blueprints if bp.name not in _SKIP_BLUEPRINT_NAMES]
     if not crafting:
         return ""
     parts: list[str] = []
@@ -218,10 +216,7 @@ def format_blueprint_workstations(
     blueprints: list[Blueprint],
     guid_map: dict[str, str],
 ) -> str:
-    crafting = [
-        bp for bp in blueprints
-        if bp.name not in _SKIP_BLUEPRINT_NAMES
-    ]
+    crafting = [bp for bp in blueprints if bp.name not in _SKIP_BLUEPRINT_NAMES]
     if not crafting:
         return ""
     seen: set[str] = set()

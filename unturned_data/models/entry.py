@@ -5,6 +5,7 @@ Provides base BundleEntry (Pydantic BaseModel) and composable stat blocks
 (DamageStats, ConsumableStats, StorageStats) that category-specific
 models will reuse.
 """
+
 from __future__ import annotations
 
 from typing import Any
