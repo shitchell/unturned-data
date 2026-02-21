@@ -642,12 +642,25 @@ def export_schema_c(
         print(warnings_text, file=sys.stderr)
 
     if show_ignored:
-        from unturned_data.models.properties.base import GLOBAL_IGNORE
+        from unturned_data.models.properties.base import GLOBAL_IGNORE, GLOBAL_HANDLED
 
-        print(
-            f"\nIntentionally ignored fields: {', '.join(sorted(GLOBAL_IGNORE))}",
-            file=sys.stderr,
-        )
+        print("\n=== Globally Handled Fields ===", file=sys.stderr)
+        print(f"  {', '.join(sorted(GLOBAL_HANDLED))}", file=sys.stderr)
+
+        print("\n=== Globally Ignored Fields ===", file=sys.stderr)
+        print(f"  {', '.join(sorted(GLOBAL_IGNORE))}", file=sys.stderr)
+
+        print("\n=== Per-Type Ignored Fields ===", file=sys.stderr)
+        for type_name, props_cls in sorted(PROPERTIES_REGISTRY.items()):
+            ignores: list[str] = []
+            if props_cls.IGNORE:
+                ignores.extend(sorted(props_cls.IGNORE))
+            if props_cls.IGNORE_PATTERNS:
+                ignores.extend(f"/{p.pattern}/" for p in props_cls.IGNORE_PATTERNS)
+            if ignores:
+                print(f"  {type_name} ({props_cls.__name__}):", file=sys.stderr)
+                for ign in ignores:
+                    print(f"    - {ign}", file=sys.stderr)
 
     if strict and report.has_uncovered():
         raise SystemExit(
