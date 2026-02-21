@@ -273,11 +273,93 @@ class TestBlueprint:
         # Repair type should NOT get "this" as output
         assert bp.outputs == []
 
+    def test_legacy_output_key_parsed(self):
+        """Legacy blueprints use Output_N_ID, not Product_N_ID."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Tool",
+            "Blueprint_0_Output_0_ID": 36011,
+            "Blueprint_0_Output_0_Amount": 3,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert len(bps) == 1
+        assert bps[0].outputs == ["36011 x 3"]
+
+    def test_legacy_single_output(self):
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Output_0_ID": 100,
+            "Blueprint_0_Output_0_Amount": 1,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].outputs == ["100"]
+
+    def test_legacy_no_outputs_defaults_to_this(self):
+        """Craft blueprints with no outputs should still default to 'this'."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Supply_0_ID": 50,
+            "Blueprint_0_Supply_0_Amount": 2,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].outputs == ["this"]
+
+    def test_legacy_tool_type_is_salvage(self):
+        """Type Tool blueprints should be classified as Salvage."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Tool",
+            "Blueprint_0_Output_0_ID": 36011,
+            "Blueprint_0_Output_0_Amount": 3,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].name == "Salvage"
+
     def test_legacy_integer_zero_returns_empty(self):
         """Blueprints 0 should return empty list."""
         raw = {"Blueprints": 0}
         bps = Blueprint.list_from_raw(raw)
         assert bps == []
+
+
+class TestBlueprintLegacySkillBuild:
+    def test_extracts_skill(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Skill": "Cook",
+            "Blueprint_0_Level": "2",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].skill == "Cook"
+        assert bps[0].skill_level == 2
+
+    def test_extracts_build(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Build": "Torch",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].build == "Torch"
+
+    def test_defaults_when_missing(self):
+        from unturned_data.models import Blueprint
+
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].skill == ""
+        assert bps[0].skill_level == 0
+        assert bps[0].build == ""
 
 
 # ---------------------------------------------------------------------------

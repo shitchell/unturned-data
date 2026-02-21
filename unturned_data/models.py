@@ -138,6 +138,7 @@ class Blueprint(BaseModel):
     outputs: list[Any] = []
     skill: str = ""
     skill_level: int = 0
+    build: str = ""
     workstation_tags: list[str] = []
 
     @staticmethod
@@ -202,7 +203,7 @@ class Blueprint(BaseModel):
             "Supply": "Craft",
             "Repair": "Repair",
             "Ammo": "Craft",
-            "Tool": "Craft",
+            "Tool": "Salvage",
             "Apparel": "Craft",
             "Refill": "Craft",
         }
@@ -233,18 +234,18 @@ class Blueprint(BaseModel):
                     {"ID": str(tool_id), "Amount": 1, "Delete": False}
                 )
 
-            # Parse products (outputs)
+            # Parse outputs
             outputs: list[Any] = []
             j = 0
             while True:
-                product_id = raw.get(f"{prefix}Product_{j}_ID")
-                if product_id is None:
+                output_id = raw.get(f"{prefix}Output_{j}_ID")
+                if output_id is None:
                     break
-                amount = int(raw.get(f"{prefix}Product_{j}_Amount", 1))
+                amount = int(raw.get(f"{prefix}Output_{j}_Amount", 1))
                 if amount > 1:
-                    outputs.append(f"{product_id} x {amount}")
+                    outputs.append(f"{output_id} x {amount}")
                 else:
-                    outputs.append(str(product_id))
+                    outputs.append(str(output_id))
                 j += 1
 
             # If no explicit outputs and it's a Craft type, output is the
@@ -252,10 +253,18 @@ class Blueprint(BaseModel):
             if not outputs and name == "Craft":
                 outputs = ["this"]
 
+            # Parse skill, skill_level, and build
+            skill = str(raw.get(f"{prefix}Skill", ""))
+            skill_level = int(raw.get(f"{prefix}Level", 0))
+            build = str(raw.get(f"{prefix}Build", ""))
+
             results.append(Blueprint(
                 name=name,
                 inputs=inputs,
                 outputs=outputs,
+                skill=skill,
+                skill_level=skill_level,
+                build=build,
             ))
 
         return results

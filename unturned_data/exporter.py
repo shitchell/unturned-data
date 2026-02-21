@@ -270,19 +270,35 @@ def _collect_assets(bundles_path: Path) -> list[AssetEntry]:
             parsed = parse_asset_file(asset_file)
         except Exception:
             continue
+        # Try Metadata-nested format first (standard .asset files),
+        # then top-level format (tag .asset files)
         meta = parsed.get("Metadata", {})
         if not isinstance(meta, dict):
-            continue
-        guid = str(meta.get("GUID", "")).lower()
+            meta = {}
+        guid = str(meta.get("GUID", "") or parsed.get("GUID", "")).lower()
         if not guid:
             continue
-        csharp_type = str(meta.get("Type", ""))
+        csharp_type = str(meta.get("Type", "") or parsed.get("Type", ""))
         type_short = csharp_type.split(",")[0].rsplit(".", 1)[-1] if csharp_type else ""
+
+        # For tag assets, read the friendly name from English.dat if available
+        name = asset_file.stem.replace("_", " ")
+        english_dat = asset_file.parent / "English.dat"
+        if english_dat.exists():
+            try:
+                eng_text = english_dat.read_text(encoding="utf-8-sig")
+                for line in eng_text.splitlines():
+                    if line.startswith("Name "):
+                        name = line[5:].strip()
+                        break
+            except Exception:
+                pass
+
         rel_path = str(asset_file.relative_to(bundles_path))
         assets.append(
             AssetEntry(
                 guid=guid,
-                name=asset_file.stem.replace("_", " "),
+                name=name,
                 csharp_type=type_short,
                 source_path=rel_path,
                 raw=parsed,
@@ -424,6 +440,7 @@ def _build_guid_index(
                     id=entry.id,
                     type=entry.type,
                     name=entry.name,
+                    kind="item",
                 )
             if entry.id:
                 id_str = str(entry.id)
@@ -440,12 +457,14 @@ def _build_guid_index(
     ) -> None:
         for idx, asset in enumerate(items):
             if asset.guid and asset.guid not in entries_index:
+                kind = "tag" if asset.csharp_type == "Tag" else "asset"
                 entries_index[asset.guid] = GuidIndexEntry(
                     file=file_path,
                     index=idx,
                     id=0,
                     type=asset.csharp_type,
                     name=asset.name,
+                    kind=kind,
                 )
 
     # Index base entries and assets

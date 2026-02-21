@@ -103,6 +103,20 @@ class TestGuidIndexByIdFormat:
         assert gi.by_id == {}
 
 
+class TestGuidIndexEntryKind:
+    def test_kind_defaults_to_empty(self):
+        entry = GuidIndexEntry(file="base/entries.json", index=0)
+        assert entry.kind == ""
+
+    def test_kind_set_to_item(self):
+        entry = GuidIndexEntry(file="base/entries.json", index=0, kind="item")
+        assert entry.kind == "item"
+
+    def test_kind_set_to_tag(self):
+        entry = GuidIndexEntry(file="base/assets.json", index=0, kind="tag")
+        assert entry.kind == "tag"
+
+
 class TestAssetEntry:
     def test_basic(self):
         a = AssetEntry(

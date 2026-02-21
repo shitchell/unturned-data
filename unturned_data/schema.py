@@ -92,6 +92,7 @@ class GuidIndexEntry(BaseModel):
     id: int = 0
     type: str = ""
     name: str = ""
+    kind: str = ""
 
 
 class GuidIndex(BaseModel):
