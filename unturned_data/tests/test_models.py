@@ -557,7 +557,13 @@ class TestBundleEntrySchemaC:
     """Tests for Schema C output shape from model_dump()."""
 
     def test_schema_c_keys_present(self):
-        """model_dump() should include all Schema C top-level keys."""
+        """model_dump() should include all Schema C top-level keys.
+
+        Note: model_dump() still includes 'parsed' (computed field on
+        BundleEntry), but SCHEMA_C_FIELDS no longer includes it —
+        _serialize_entry() filters it out. This test checks the raw
+        model_dump() shape which includes both parsed and properties.
+        """
         raw, english = _load_fixture("food_beans")
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
         d = entry.model_dump()

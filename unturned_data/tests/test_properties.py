@@ -184,9 +184,11 @@ class TestFieldCoverageReport:
 class TestPropertiesRegistry:
     """Tests for the PROPERTIES_REGISTRY."""
 
-    def test_registry_empty_initially(self):
-        """PROPERTIES_REGISTRY starts empty (no type models registered yet)."""
-        assert PROPERTIES_REGISTRY == {}
+    def test_registry_has_weapon_types(self):
+        """PROPERTIES_REGISTRY contains weapon types after import."""
+        assert "Gun" in PROPERTIES_REGISTRY
+        assert "Melee" in PROPERTIES_REGISTRY
+        assert "Throwable" in PROPERTIES_REGISTRY
 
     def test_get_properties_class_none(self):
         """get_properties_class returns None for unregistered types."""

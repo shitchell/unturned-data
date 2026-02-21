@@ -36,6 +36,26 @@ from unturned_data.models.properties.barricades import (
     TrapProperties,
 )
 from unturned_data.models.properties.structures import StructureProperties
+from unturned_data.models.properties.misc import (
+    ArrestEndProperties,
+    ArrestStartProperties,
+    BoxProperties,
+    CloudProperties,
+    CompassProperties,
+    DetonatorProperties,
+    FilterProperties,
+    FisherProperties,
+    FuelProperties,
+    GrowerProperties,
+    KeyProperties,
+    MapProperties,
+    OpticProperties,
+    RefillProperties,
+    SupplyProperties,
+    TireProperties,
+    ToolProperties,
+    VehicleRepairToolProperties,
+)
 
 PROPERTIES_REGISTRY: dict[str, type[ItemProperties]] = {}
 
@@ -82,6 +102,26 @@ PROPERTIES_REGISTRY["Oil_Pump"] = OilPumpProperties
 
 # Structure types
 PROPERTIES_REGISTRY["Structure"] = StructureProperties
+
+# Misc types
+PROPERTIES_REGISTRY["Cloud"] = CloudProperties
+PROPERTIES_REGISTRY["Map"] = MapProperties
+PROPERTIES_REGISTRY["Key"] = KeyProperties
+PROPERTIES_REGISTRY["Fisher"] = FisherProperties
+PROPERTIES_REGISTRY["Fuel"] = FuelProperties
+PROPERTIES_REGISTRY["Optic"] = OpticProperties
+PROPERTIES_REGISTRY["Refill"] = RefillProperties
+PROPERTIES_REGISTRY["Box"] = BoxProperties
+PROPERTIES_REGISTRY["Tire"] = TireProperties
+PROPERTIES_REGISTRY["Compass"] = CompassProperties
+PROPERTIES_REGISTRY["Detonator"] = DetonatorProperties
+PROPERTIES_REGISTRY["Filter"] = FilterProperties
+PROPERTIES_REGISTRY["Grower"] = GrowerProperties
+PROPERTIES_REGISTRY["Supply"] = SupplyProperties
+PROPERTIES_REGISTRY["Tool"] = ToolProperties
+PROPERTIES_REGISTRY["Vehicle_Repair_Tool"] = VehicleRepairToolProperties
+PROPERTIES_REGISTRY["Arrest_Start"] = ArrestStartProperties
+PROPERTIES_REGISTRY["Arrest_End"] = ArrestEndProperties
 
 
 def get_properties_class(item_type: str) -> type[ItemProperties] | None:

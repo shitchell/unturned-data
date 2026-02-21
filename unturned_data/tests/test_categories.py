@@ -124,6 +124,14 @@ class TestGun:
         entry = parse_entry(raw, english, "gun_maplestrike")
         assert isinstance(entry, Gun)
 
+    def test_properties_populated_via_parse_entry(self):
+        """parse_entry() should populate properties from PROPERTIES_REGISTRY."""
+        raw, english = _load_fixture("gun_maplestrike")
+        entry = parse_entry(raw, english, "gun_maplestrike")
+        assert entry.properties != {}
+        assert "firerate" in entry.properties
+        assert entry.properties["firerate"] == 5
+
 
 # ---------------------------------------------------------------------------
 # TestMeleeWeapon
@@ -500,6 +508,13 @@ class TestGenericEntry:
         english = {"Name": "Mystery Item"}
         entry = parse_entry(raw, english, "test/path")
         assert isinstance(entry, GenericEntry)
+
+    def test_unknown_type_has_empty_properties(self):
+        """Unknown types should have empty properties dict."""
+        raw = {"Type": "SomeNewType", "ID": 9999, "Foo": "bar"}
+        english = {"Name": "Mystery Item"}
+        entry = parse_entry(raw, english, "test/path")
+        assert entry.properties == {}
 
     def test_preserves_raw(self):
         raw = {"Type": "SomeNewType", "ID": 9999, "Foo": "bar"}

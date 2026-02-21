@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from unturned_data.models import BundleEntry
+from unturned_data.models.properties import PROPERTIES_REGISTRY
 
 from unturned_data.categories.animals import Animal
 from unturned_data.categories.generic import GenericEntry
@@ -98,4 +99,12 @@ def parse_entry(
     """
     entry_type = str(raw.get("Type", ""))
     model_cls = TYPE_REGISTRY.get(entry_type, GenericEntry)
-    return model_cls.from_raw(raw, english, source_path)
+    entry = model_cls.from_raw(raw, english, source_path)
+
+    # Populate properties from registry
+    props_cls = PROPERTIES_REGISTRY.get(entry_type)
+    if props_cls:
+        props = props_cls.from_raw(raw)
+        entry.properties = props.model_dump(exclude_defaults=True)
+
+    return entry

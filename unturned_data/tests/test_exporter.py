@@ -28,9 +28,12 @@ class TestSerializeEntry:
         d = _serialize_entry(gun)
 
         # Should have Schema C fields
-        assert "parsed" in d
+        assert "properties" in d
         assert "english" in d
         assert "raw" in d
+
+        # "parsed" should NOT be in Schema C output (removed in favor of properties)
+        assert "parsed" not in d
 
         # slot and useable are now base fields, so they SHOULD be at top level
         assert "slot" in d
@@ -40,10 +43,6 @@ class TestSerializeEntry:
         assert "caliber" not in d
         assert "damage" not in d
         assert "firerate" not in d
-
-        # parsed should have subclass-specific fields (but not slot)
-        assert "slot" not in d["parsed"]
-        assert "firerate" in d["parsed"]
 
     def test_all_schema_c_fields_present(self):
         from unturned_data.models import BundleEntry
@@ -77,11 +76,13 @@ class TestExportSchemaC:
         if entries:
             e = entries[0]
             assert "guid" in e
-            assert "parsed" in e
+            assert "properties" in e
             assert "english" in e
             assert "raw" in e
             assert "blueprints" in e
             assert "category" in e
+            # "parsed" should NOT be in Schema C output
+            assert "parsed" not in e
             # No subclass-specific top-level fields
             for key in e:
                 assert key in SCHEMA_C_FIELDS, f"Unexpected top-level key: {key}"

@@ -216,7 +216,6 @@ SCHEMA_C_FIELDS = {
     "source_path",
     "category",
     "english",
-    "parsed",
     "blueprints",
     "actions",
     "properties",
