@@ -13,6 +13,7 @@ import pytest
 from unturned_data.dat_parser import parse_dat_file
 from unturned_data.loader import load_english_dat
 from unturned_data.models import (
+    Action,
     Blueprint,
     BlueprintCondition,
     BlueprintReward,
@@ -561,6 +562,7 @@ class TestBundleEntrySchemaC:
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
         d = entry.model_dump()
         expected_keys = {
+            "actions",
             "guid",
             "type",
             "id",
@@ -677,3 +679,73 @@ class TestCraftingBlacklistPydantic:
         dj = bl.model_dump(mode="json")
         assert isinstance(dj["blocked_inputs"], list)
         assert set(dj["blocked_inputs"]) == {"guid-a", "guid-b"}
+
+
+# ---------------------------------------------------------------------------
+# TestAction
+# ---------------------------------------------------------------------------
+class TestAction:
+    """Action.list_from_raw parsing."""
+
+    def test_parse_from_fixture(self):
+        raw, english = _load_fixture("action_stack_sheet")
+        actions = Action.list_from_raw(raw)
+        assert len(actions) == 1
+        a = actions[0]
+        assert a.type == "Blueprint"
+        assert a.source == "1910"
+        assert a.blueprint_indices == [1]
+        assert a.key == "Unstack"
+        assert a.text == ""
+        assert a.tooltip == ""
+
+    def test_parse_type(self):
+        raw, _ = _load_fixture("action_stack_sheet")
+        actions = Action.list_from_raw(raw)
+        assert actions[0].type == "Blueprint"
+
+    def test_parse_source(self):
+        raw, _ = _load_fixture("action_stack_sheet")
+        actions = Action.list_from_raw(raw)
+        assert actions[0].source == "1910"
+
+    def test_parse_blueprint_indices(self):
+        raw, _ = _load_fixture("action_stack_sheet")
+        actions = Action.list_from_raw(raw)
+        assert actions[0].blueprint_indices == [1]
+
+    def test_parse_key(self):
+        raw, _ = _load_fixture("action_stack_sheet")
+        actions = Action.list_from_raw(raw)
+        assert actions[0].key == "Unstack"
+
+    def test_no_actions_returns_empty(self):
+        raw, _ = _load_fixture("food_beans")
+        actions = Action.list_from_raw(raw)
+        assert actions == []
+
+    def test_actions_in_bundle_entry(self):
+        raw, english = _load_fixture("action_stack_sheet")
+        entry = BundleEntry.from_raw(raw, english, "action_stack_sheet")
+        assert len(entry.actions) == 1
+        assert entry.actions[0].type == "Blueprint"
+        assert entry.actions[0].source == "1910"
+
+    def test_action_serializes(self):
+        a = Action(
+            type="Blueprint",
+            source="1910",
+            blueprint_indices=[1],
+            key="Unstack",
+            text="",
+            tooltip="",
+        )
+        d = a.model_dump()
+        assert d == {
+            "type": "Blueprint",
+            "source": "1910",
+            "blueprint_indices": [1],
+            "key": "Unstack",
+            "text": "",
+            "tooltip": "",
+        }

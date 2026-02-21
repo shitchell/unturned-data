@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, computed_field
 
+from .action import Action
 from .blueprint import Blueprint
 
 
@@ -137,6 +138,7 @@ class BundleEntry(BaseModel):
     source_path: str = ""
     raw: dict[str, Any] = {}
     english: dict[str, str] = {}
+    actions: list[Action] = []
     blueprints: list[Blueprint] = []
 
     @computed_field
@@ -170,6 +172,7 @@ class BundleEntry(BaseModel):
             source_path=source_path,
             raw=raw,
             english=english,
+            actions=Action.list_from_raw(raw),
             blueprints=Blueprint.list_from_raw(raw),
         )
 

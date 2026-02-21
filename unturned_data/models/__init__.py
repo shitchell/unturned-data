@@ -6,6 +6,7 @@ Provides base BundleEntry (Pydantic BaseModel) and composable stat blocks
 models will reuse.
 """
 
+from unturned_data.models.action import Action
 from unturned_data.models.entry import (
     BundleEntry,
     CraftingBlacklist,
@@ -24,6 +25,7 @@ from unturned_data.models.blueprint import (
 )
 
 __all__ = [
+    "Action",
     "Blueprint",
     "BlueprintCondition",
     "BlueprintReward",
