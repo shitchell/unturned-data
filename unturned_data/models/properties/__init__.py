@@ -22,6 +22,20 @@ from unturned_data.models.properties.attachments import (
     SightProperties,
     TacticalProperties,
 )
+from unturned_data.models.properties.barricades import (
+    BarricadeProperties,
+    BeaconProperties,
+    ChargeProperties,
+    FarmProperties,
+    GeneratorProperties,
+    LibraryProperties,
+    OilPumpProperties,
+    SentryProperties,
+    StorageProperties,
+    TankProperties,
+    TrapProperties,
+)
+from unturned_data.models.properties.structures import StructureProperties
 
 PROPERTIES_REGISTRY: dict[str, type[ItemProperties]] = {}
 
@@ -52,6 +66,22 @@ PROPERTIES_REGISTRY["Barrel"] = BarrelProperties
 PROPERTIES_REGISTRY["Grip"] = GripProperties
 PROPERTIES_REGISTRY["Tactical"] = TacticalProperties
 PROPERTIES_REGISTRY["Magazine"] = MagazineProperties
+
+# Barricade types
+PROPERTIES_REGISTRY["Barricade"] = BarricadeProperties
+PROPERTIES_REGISTRY["Storage"] = StorageProperties
+PROPERTIES_REGISTRY["Sentry"] = SentryProperties
+PROPERTIES_REGISTRY["Farm"] = FarmProperties
+PROPERTIES_REGISTRY["Generator"] = GeneratorProperties
+PROPERTIES_REGISTRY["Trap"] = TrapProperties
+PROPERTIES_REGISTRY["Beacon"] = BeaconProperties
+PROPERTIES_REGISTRY["Tank"] = TankProperties
+PROPERTIES_REGISTRY["Charge"] = ChargeProperties
+PROPERTIES_REGISTRY["Library"] = LibraryProperties
+PROPERTIES_REGISTRY["Oil_Pump"] = OilPumpProperties
+
+# Structure types
+PROPERTIES_REGISTRY["Structure"] = StructureProperties
 
 
 def get_properties_class(item_type: str) -> type[ItemProperties] | None:
