@@ -123,7 +123,9 @@ class TestExportSchemaC:
 
     def test_entries_include_raw_when_requested(self, tmp_path):
         export_schema_c(
-            base_bundles=FIXTURES, map_dirs=[], output_dir=tmp_path,
+            base_bundles=FIXTURES,
+            map_dirs=[],
+            output_dir=tmp_path,
             include_raw=True,
         )
         entries = json.loads((tmp_path / "base" / "entries.json").read_text())

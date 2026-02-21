@@ -272,9 +272,7 @@ def _is_map_dir(path: Path) -> bool:
     )
 
 
-def _serialize_entry(
-    entry: BundleEntry, include_raw: bool = False
-) -> dict[str, Any]:
+def _serialize_entry(entry: BundleEntry, include_raw: bool = False) -> dict[str, Any]:
     """Serialize a single entry to Schema C dict (only Schema C fields)."""
     fields = SCHEMA_C_FIELDS_WITH_RAW if include_raw else SCHEMA_C_FIELDS
     return entry.model_dump(include=fields)
