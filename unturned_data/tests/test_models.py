@@ -1,7 +1,6 @@
 """
-Tests for shared stat dataclasses and base BundleEntry model.
-
-Covers: DamageStats, ConsumableStats, StorageStats, Blueprint, BundleEntry.
+Tests for shared models: Blueprint, BundleEntry, CraftingBlacklist,
+SpawnTable, SpawnTableEntry, Action.
 """
 
 from __future__ import annotations
@@ -18,12 +17,9 @@ from unturned_data.models import (
     BlueprintCondition,
     BlueprintReward,
     BundleEntry,
-    ConsumableStats,
     CraftingBlacklist,
-    DamageStats,
     SpawnTable,
     SpawnTableEntry,
-    StorageStats,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -38,146 +34,6 @@ def _load_fixture(name: str) -> tuple[dict, dict]:
     raw = parse_dat_file(dat_files[0])
     english = load_english_dat(fixture_dir / "English.dat")
     return raw, english
-
-
-# ---------------------------------------------------------------------------
-# TestDamageStats
-# ---------------------------------------------------------------------------
-class TestDamageStats:
-    """DamageStats.from_raw parsing."""
-
-    def test_gun_fixture(self):
-        raw, _ = _load_fixture("gun_maplestrike")
-        ds = DamageStats.from_raw(raw)
-        assert ds is not None
-        assert ds.player == 40
-        assert ds.zombie == 99
-        assert ds.animal == 40
-        # Multipliers
-        assert ds.player_multipliers["skull"] == 1.1
-        assert ds.player_multipliers["spine"] == 0.8
-        assert ds.player_multipliers["arm"] == 0.6
-        assert ds.player_multipliers["leg"] == 0.6
-        assert ds.zombie_multipliers["skull"] == 1.1
-        assert ds.zombie_multipliers["spine"] == 0.6
-        assert ds.zombie_multipliers["arm"] == 0.3
-        assert ds.zombie_multipliers["leg"] == 0.3
-        assert ds.animal_multipliers["skull"] == 1.1
-        assert ds.animal_multipliers["spine"] == 0.8
-        assert ds.animal_multipliers["leg"] == 0.6
-        # Environmental damage
-        assert ds.barricade == 20
-        assert ds.structure == 15
-        assert ds.vehicle == 35
-        assert ds.resource == 15
-        assert ds.object == 25
-
-    def test_food_returns_none(self):
-        raw, _ = _load_fixture("food_beans")
-        ds = DamageStats.from_raw(raw)
-        assert ds is None
-
-    def test_melee_fixture(self):
-        raw, _ = _load_fixture("melee_katana")
-        ds = DamageStats.from_raw(raw)
-        assert ds is not None
-        assert ds.player == 50
-        assert ds.zombie == 50
-        assert ds.animal == 50
-        assert ds.barricade == 2
-        assert ds.structure == 2
-        assert ds.vehicle == 15
-        assert ds.resource == 25
-        assert ds.object == 20
-        # Multipliers
-        assert ds.player_multipliers["skull"] == 1.1
-        assert ds.animal_multipliers["spine"] == 0.6
-
-    def test_barricade_with_damage(self):
-        """Barbed wire has Player/Zombie/Animal_Damage but no multipliers."""
-        raw, _ = _load_fixture("barricade_wire")
-        ds = DamageStats.from_raw(raw)
-        assert ds is not None
-        assert ds.player == 40
-        assert ds.zombie == 80
-        assert ds.animal == 80
-        # No multiplier keys in barbed wire -- should default to empty dicts
-        assert ds.player_multipliers == {}
-        assert ds.zombie_multipliers == {}
-        assert ds.animal_multipliers == {}
-
-    def test_animal_uses_damage_key(self):
-        """Bear uses 'Damage' key for its attack damage, not Player_Damage etc."""
-        raw, _ = _load_fixture("animal_bear")
-        ds = DamageStats.from_raw(raw)
-        # Bear has Damage 20 but no Player_Damage/Zombie_Damage/Animal_Damage
-        # The spec says animals use just "Damage" -- from_raw should detect this
-        assert ds is not None
-        assert ds.animal == 20
-
-
-# ---------------------------------------------------------------------------
-# TestConsumableStats
-# ---------------------------------------------------------------------------
-class TestConsumableStats:
-    """ConsumableStats.from_raw parsing."""
-
-    def test_food_fixture(self):
-        raw, _ = _load_fixture("food_beans")
-        cs = ConsumableStats.from_raw(raw)
-        assert cs is not None
-        assert cs.food == 55
-        assert cs.health == 10
-        assert cs.water == 0
-        assert cs.virus == 0
-        assert cs.vision == 0
-
-    def test_water_berries(self):
-        raw, _ = _load_fixture("water_berries")
-        cs = ConsumableStats.from_raw(raw)
-        assert cs is not None
-        assert cs.virus == 5
-        assert cs.vision == 20
-        assert cs.food == 5
-        assert cs.water == 10
-        assert cs.health == 10
-
-    def test_gun_returns_none(self):
-        raw, _ = _load_fixture("gun_maplestrike")
-        cs = ConsumableStats.from_raw(raw)
-        assert cs is None
-
-    def test_bandage_with_bleeding_modifier(self):
-        raw, _ = _load_fixture("medical_bandage")
-        cs = ConsumableStats.from_raw(raw)
-        assert cs is not None
-        assert cs.bleeding_modifier == "Heal"
-        assert cs.health == 15
-
-    def test_structure_with_health_returns_none(self):
-        """Structures have Health but aren't consumables."""
-        raw, _ = _load_fixture("structure_wall")
-        cs = ConsumableStats.from_raw(raw)
-        assert cs is None
-
-
-# ---------------------------------------------------------------------------
-# TestStorageStats
-# ---------------------------------------------------------------------------
-class TestStorageStats:
-    """StorageStats.from_raw parsing."""
-
-    def test_backpack(self):
-        raw, _ = _load_fixture("backpack_alice")
-        ss = StorageStats.from_raw(raw)
-        assert ss is not None
-        assert ss.width == 8
-        assert ss.height == 7
-
-    def test_food_returns_none(self):
-        raw, _ = _load_fixture("food_beans")
-        ss = StorageStats.from_raw(raw)
-        assert ss is None
 
 
 # ---------------------------------------------------------------------------
@@ -330,8 +186,6 @@ class TestBlueprint:
 
 class TestBlueprintLegacySkillBuild:
     def test_extracts_skill(self):
-        from unturned_data.models import Blueprint
-
         raw = {
             "Blueprints": 1,
             "Blueprint_0_Type": "Supply",
@@ -343,8 +197,6 @@ class TestBlueprintLegacySkillBuild:
         assert bps[0].skill_level == 2
 
     def test_extracts_build(self):
-        from unturned_data.models import Blueprint
-
         raw = {
             "Blueprints": 1,
             "Blueprint_0_Type": "Supply",
@@ -354,8 +206,6 @@ class TestBlueprintLegacySkillBuild:
         assert bps[0].build == "Torch"
 
     def test_defaults_when_missing(self):
-        from unturned_data.models import Blueprint
-
         raw = {
             "Blueprints": 1,
             "Blueprint_0_Type": "Supply",
@@ -557,13 +407,7 @@ class TestBundleEntrySchemaC:
     """Tests for Schema C output shape from model_dump()."""
 
     def test_schema_c_keys_present(self):
-        """model_dump() should include all Schema C top-level keys.
-
-        Note: model_dump() still includes 'parsed' (computed field on
-        BundleEntry), but SCHEMA_C_FIELDS no longer includes it —
-        _serialize_entry() filters it out. This test checks the raw
-        model_dump() shape which includes both parsed and properties.
-        """
+        """model_dump() should include all Schema C top-level keys."""
         raw, english = _load_fixture("food_beans")
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
         d = entry.model_dump()
@@ -589,7 +433,6 @@ class TestBundleEntrySchemaC:
             "blueprints",
             "properties",
             "category",
-            "parsed",
         }
         assert expected_keys == set(d.keys())
 
@@ -599,13 +442,6 @@ class TestBundleEntrySchemaC:
         entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
         d = entry.model_dump()
         assert d["category"] == ["Items", "Food"]
-
-    def test_schema_c_parsed_empty_for_base(self):
-        """Base BundleEntry parsed should be empty dict."""
-        raw, english = _load_fixture("food_beans")
-        entry = BundleEntry.from_raw(raw, english, "Items/Food/food_beans")
-        d = entry.model_dump()
-        assert d["parsed"] == {}
 
     def test_schema_c_english_stored(self):
         """english field should contain the full English.dat dict."""
@@ -654,8 +490,6 @@ class TestSpawnTableSchemaC:
         assert d == {"ref_type": "asset", "ref_id": 42, "ref_guid": "", "weight": 10}
 
     def test_spawn_table_model_dump(self):
-        from unturned_data.models import SpawnTable, SpawnTableEntry
-
         entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
         table = SpawnTable(
             guid="abc",

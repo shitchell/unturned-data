@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import pytest
 
-from unturned_data.categories import Animal, Consumeable, Gun, GenericEntry
+from unturned_data.categories import Animal, GenericEntry
+from unturned_data.models import BundleEntry
 from unturned_data.formatters.markdown_fmt import build_guid_map, entries_to_markdown
 
 
@@ -20,9 +21,9 @@ def _make_animal(name: str, id: int, guid: str = "") -> Animal:
     )
 
 
-def _make_gun(name: str, id: int, guid: str = "") -> Gun:
-    """Helper to build a minimal Gun entry."""
-    return Gun(
+def _make_gun(name: str, id: int, guid: str = "") -> BundleEntry:
+    """Helper to build a minimal Gun-type BundleEntry."""
+    return BundleEntry(
         guid=guid,
         type="Gun",
         id=id,
@@ -31,9 +32,9 @@ def _make_gun(name: str, id: int, guid: str = "") -> Gun:
     )
 
 
-def _make_consumeable(name: str, id: int, guid: str = "") -> Consumeable:
-    """Helper to build a minimal Consumeable entry."""
-    return Consumeable(
+def _make_consumeable(name: str, id: int, guid: str = "") -> BundleEntry:
+    """Helper to build a minimal Food-type BundleEntry."""
+    return BundleEntry(
         guid=guid,
         type="Food",
         id=id,

@@ -14,58 +14,13 @@ from unturned_data.models.properties import PROPERTIES_REGISTRY
 
 from unturned_data.categories.animals import Animal
 from unturned_data.categories.generic import GenericEntry
-from unturned_data.categories.items import (
-    Attachment,
-    BarricadeItem,
-    Clothing,
-    Consumeable,
-    Gun,
-    Magazine,
-    MeleeWeapon,
-    StructureItem,
-    Throwable,
-)
 from unturned_data.categories.spawns import SpawnTableCategory
 from unturned_data.categories.vehicles import Vehicle
 
 TYPE_REGISTRY: dict[str, type[BundleEntry]] = {
-    # Weapons
-    "Gun": Gun,
-    "Melee": MeleeWeapon,
-    "Throwable": Throwable,
-    # Consumables
-    "Food": Consumeable,
-    "Water": Consumeable,
-    "Medical": Consumeable,
-    # Clothing
-    "Shirt": Clothing,
-    "Pants": Clothing,
-    "Hat": Clothing,
-    "Vest": Clothing,
-    "Backpack": Clothing,
-    "Mask": Clothing,
-    "Glasses": Clothing,
-    # Barricades
-    "Barricade": BarricadeItem,
-    "Trap": BarricadeItem,
-    "Storage": BarricadeItem,
-    "Sentry": BarricadeItem,
-    "Generator": BarricadeItem,
-    "Beacon": BarricadeItem,
-    "Oil_Pump": BarricadeItem,
-    # Structures
-    "Structure": StructureItem,
-    # Magazines
-    "Magazine": Magazine,
-    # Attachments
-    "Sight": Attachment,
-    "Grip": Attachment,
-    "Barrel": Attachment,
-    "Tactical": Attachment,
-    # Vehicles & Animals
+    # Special types with custom models
     "Vehicle": Vehicle,
     "Animal": Animal,
-    # Spawn tables
     "Spawn": SpawnTableCategory,
 }
 
@@ -73,16 +28,7 @@ __all__ = [
     "TYPE_REGISTRY",
     "parse_entry",
     "Animal",
-    "Attachment",
-    "BarricadeItem",
-    "Clothing",
-    "Consumeable",
     "GenericEntry",
-    "Gun",
-    "Magazine",
-    "MeleeWeapon",
-    "StructureItem",
-    "Throwable",
     "SpawnTableCategory",
     "Vehicle",
 ]
