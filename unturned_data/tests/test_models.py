@@ -13,6 +13,8 @@ from unturned_data.dat_parser import parse_dat_file
 from unturned_data.loader import load_english_dat
 from unturned_data.models import (
     Blueprint,
+    BlueprintCondition,
+    BlueprintReward,
     BundleEntry,
     ConsumableStats,
     CraftingBlacklist,
@@ -360,6 +362,101 @@ class TestBlueprintLegacySkillBuild:
         assert bps[0].skill == ""
         assert bps[0].skill_level == 0
         assert bps[0].build == ""
+
+
+# ---------------------------------------------------------------------------
+# TestBlueprintConditionsRewards
+# ---------------------------------------------------------------------------
+class TestBlueprintConditionsRewards:
+    """Tests for Blueprint conditions, rewards, and new fields."""
+
+    def test_legacy_blueprint_conditions(self):
+        raw, _ = _load_fixture("legacy_blueprint_conditions")
+        bps = Blueprint.list_from_raw(raw)
+        assert len(bps) == 1
+        bp = bps[0]
+        assert len(bp.conditions) == 1
+        cond = bp.conditions[0]
+        assert cond.type == "Holiday"
+        assert cond.value == "Christmas"
+
+    def test_legacy_blueprint_state_transfer(self):
+        raw, _ = _load_fixture("legacy_blueprint_conditions")
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].state_transfer is True
+
+    def test_legacy_blueprint_tool_critical(self):
+        raw, _ = _load_fixture("legacy_blueprint_conditions")
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].tool_critical is True
+
+    def test_legacy_blueprint_map(self):
+        raw, _ = _load_fixture("legacy_blueprint_conditions")
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].map == "PEI"
+
+    def test_legacy_blueprint_rewards(self):
+        raw, _ = _load_fixture("legacy_blueprint_conditions")
+        bps = Blueprint.list_from_raw(raw)
+        assert len(bps) == 1
+        bp = bps[0]
+        assert len(bp.rewards) == 1
+        rew = bp.rewards[0]
+        assert rew.type == "Experience"
+        assert rew.value == 5
+
+    def test_blueprint_condition_serializes(self):
+        cond = BlueprintCondition(
+            type="Holiday", value="Christmas", logic="Equal", id="cond1"
+        )
+        d = cond.model_dump()
+        assert d == {
+            "type": "Holiday",
+            "value": "Christmas",
+            "logic": "Equal",
+            "id": "cond1",
+        }
+
+    def test_blueprint_reward_serializes(self):
+        rew = BlueprintReward(
+            type="Experience", id="rew1", value=10, modification="Add"
+        )
+        d = rew.model_dump()
+        assert d == {
+            "type": "Experience",
+            "id": "rew1",
+            "value": 10,
+            "modification": "Add",
+        }
+
+    def test_new_fields_default_values(self):
+        """New fields should default correctly when not present."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Supply_0_ID": 50,
+            "Blueprint_0_Supply_0_Amount": 1,
+        }
+        bps = Blueprint.list_from_raw(raw)
+        bp = bps[0]
+        assert bp.state_transfer is False
+        assert bp.tool_critical is False
+        assert bp.map == ""
+        assert bp.level == 0
+        assert bp.conditions == []
+        assert bp.rewards == []
+
+    def test_legacy_blueprint_level_synced(self):
+        """level field should match skill_level for legacy blueprints."""
+        raw = {
+            "Blueprints": 1,
+            "Blueprint_0_Type": "Supply",
+            "Blueprint_0_Skill": "Cook",
+            "Blueprint_0_Level": "3",
+        }
+        bps = Blueprint.list_from_raw(raw)
+        assert bps[0].skill_level == 3
+        assert bps[0].level == 3
 
 
 # ---------------------------------------------------------------------------

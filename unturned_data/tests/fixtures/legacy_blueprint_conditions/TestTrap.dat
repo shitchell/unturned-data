@@ -1,0 +1,17 @@
+GUID 00000000000000000000000000000001
+Type Trap
+ID 99901
+Blueprints 1
+Blueprint_0_Type Barricade
+Blueprint_0_Supply_0_ID 65
+Blueprint_0_Supply_0_Amount 2
+Blueprint_0_Build 27
+Blueprint_0_State_Transfer
+Blueprint_0_Tool_Critical
+Blueprint_0_Map PEI
+Blueprint_0_Conditions 1
+Blueprint_0_Condition_0_Type Holiday
+Blueprint_0_Condition_0_Value Christmas
+Blueprint_0_Rewards 1
+Blueprint_0_Reward_0_Type Experience
+Blueprint_0_Reward_0_Value 5

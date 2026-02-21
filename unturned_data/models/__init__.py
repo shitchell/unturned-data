@@ -17,12 +17,16 @@ from unturned_data.models.entry import (
 )
 from unturned_data.models.blueprint import (
     Blueprint,
+    BlueprintCondition,
+    BlueprintReward,
     format_blueprint_ingredients,
     format_blueprint_workstations,
 )
 
 __all__ = [
     "Blueprint",
+    "BlueprintCondition",
+    "BlueprintReward",
     "BundleEntry",
     "ConsumableStats",
     "CraftingBlacklist",

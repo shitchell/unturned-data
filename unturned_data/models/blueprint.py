@@ -11,6 +11,27 @@ from pydantic import BaseModel
 
 
 # ---------------------------------------------------------------------------
+# Blueprint sub-models
+# ---------------------------------------------------------------------------
+class BlueprintCondition(BaseModel):
+    """A condition required for a blueprint to be available."""
+
+    type: str = ""
+    value: Any = None
+    logic: str = ""
+    id: str = ""
+
+
+class BlueprintReward(BaseModel):
+    """A reward granted when a blueprint is crafted."""
+
+    type: str = ""
+    id: str = ""
+    value: Any = None
+    modification: str = ""
+
+
+# ---------------------------------------------------------------------------
 # Blueprint
 # ---------------------------------------------------------------------------
 class Blueprint(BaseModel):
@@ -25,6 +46,12 @@ class Blueprint(BaseModel):
     skill_level: int = 0
     build: str = ""
     workstation_tags: list[str] = []
+    level: int = 0
+    map: str = ""
+    state_transfer: bool = False
+    tool_critical: bool = False
+    conditions: list[BlueprintCondition] = []
+    rewards: list[BlueprintReward] = []
 
     @staticmethod
     def list_from_raw(raw: dict[str, Any]) -> list[Blueprint]:
@@ -49,6 +76,12 @@ class Blueprint(BaseModel):
                     workstation_tags=_parse_string_list(
                         bp_raw.get("RequiresNearbyCraftingTags")
                     ),
+                    state_transfer=bool(bp_raw.get("State_Transfer", False)),
+                    tool_critical=bool(bp_raw.get("Tool_Critical", False)),
+                    level=int(bp_raw.get("Skill_Level", 0)),
+                    map=str(bp_raw.get("Map", "")),
+                    conditions=_parse_modern_conditions(bp_raw),
+                    rewards=_parse_modern_rewards(bp_raw),
                 )
                 results.append(bp)
             return results
@@ -114,6 +147,11 @@ class Blueprint(BaseModel):
             skill = str(raw.get(f"{prefix}Skill", ""))
             skill_level = int(raw.get(f"{prefix}Level", 0))
             build = str(raw.get(f"{prefix}Build", ""))
+            state_transfer = bool(raw.get(f"{prefix}State_Transfer", False))
+            tool_critical = bool(raw.get(f"{prefix}Tool_Critical", False))
+            bp_map = str(raw.get(f"{prefix}Map", ""))
+            conditions = _parse_legacy_conditions(raw, prefix)
+            rewards = _parse_legacy_rewards(raw, prefix)
 
             results.append(
                 Blueprint(
@@ -123,10 +161,92 @@ class Blueprint(BaseModel):
                     skill=skill,
                     skill_level=skill_level,
                     build=build,
+                    level=skill_level,
+                    map=bp_map,
+                    state_transfer=state_transfer,
+                    tool_critical=tool_critical,
+                    conditions=conditions,
+                    rewards=rewards,
                 )
             )
 
         return results
+
+
+def _parse_modern_conditions(bp_raw: dict[str, Any]) -> list[BlueprintCondition]:
+    """Parse conditions from a modern format blueprint dict."""
+    raw_conditions = bp_raw.get("Conditions")
+    if not isinstance(raw_conditions, list):
+        return []
+    result: list[BlueprintCondition] = []
+    for cond in raw_conditions:
+        if not isinstance(cond, dict):
+            continue
+        result.append(BlueprintCondition(
+            type=str(cond.get("Type", "")),
+            value=cond.get("Value"),
+            logic=str(cond.get("Logic", "")),
+            id=str(cond.get("ID", "")),
+        ))
+    return result
+
+
+def _parse_modern_rewards(bp_raw: dict[str, Any]) -> list[BlueprintReward]:
+    """Parse rewards from a modern format blueprint dict."""
+    raw_rewards = bp_raw.get("Rewards")
+    if not isinstance(raw_rewards, list):
+        return []
+    result: list[BlueprintReward] = []
+    for rew in raw_rewards:
+        if not isinstance(rew, dict):
+            continue
+        result.append(BlueprintReward(
+            type=str(rew.get("Type", "")),
+            id=str(rew.get("ID", "")),
+            value=rew.get("Value"),
+            modification=str(rew.get("Modification", "")),
+        ))
+    return result
+
+
+def _parse_legacy_conditions(
+    raw: dict[str, Any], prefix: str
+) -> list[BlueprintCondition]:
+    """Parse Blueprint_{i}_Condition_{j}_* entries from legacy format."""
+    count = raw.get(f"{prefix}Conditions")
+    if count is None:
+        return []
+    count = int(count)
+    result: list[BlueprintCondition] = []
+    for j in range(count):
+        cprefix = f"{prefix}Condition_{j}_"
+        result.append(BlueprintCondition(
+            type=str(raw.get(f"{cprefix}Type", "")),
+            value=raw.get(f"{cprefix}Value"),
+            logic=str(raw.get(f"{cprefix}Logic", "")),
+            id=str(raw.get(f"{cprefix}ID", "")),
+        ))
+    return result
+
+
+def _parse_legacy_rewards(
+    raw: dict[str, Any], prefix: str
+) -> list[BlueprintReward]:
+    """Parse Blueprint_{i}_Reward_{j}_* entries from legacy format."""
+    count = raw.get(f"{prefix}Rewards")
+    if count is None:
+        return []
+    count = int(count)
+    result: list[BlueprintReward] = []
+    for j in range(count):
+        rprefix = f"{prefix}Reward_{j}_"
+        result.append(BlueprintReward(
+            type=str(raw.get(f"{rprefix}Type", "")),
+            id=str(raw.get(f"{rprefix}ID", "")),
+            value=raw.get(f"{rprefix}Value"),
+            modification=str(raw.get(f"{rprefix}Modification", "")),
+        ))
+    return result
 
 
 def _parse_items(value: Any) -> list[Any]:
