@@ -409,6 +409,58 @@ class TestResolveBlueprintIds:
         assert entry.blueprints[0].inputs[0]["ID"] == "tool-guid"
 
 
+class TestCollectAssetsTagFormat:
+    def test_collects_top_level_guid_assets(self, tmp_path):
+        """Assets with GUID at top level (tag format) should be collected."""
+        from unturned_data.exporter import _collect_assets
+
+        tag_dir = tmp_path / "Assets" / "Tags" / "Crafting" / "Sewing"
+        tag_dir.mkdir(parents=True)
+        (tag_dir / "CraftingTag_Sewing.asset").write_text(
+            "\ufeffGUID 2ac5ddc545a848008c0308d21f5d2e6b\nType Tag\n"
+        )
+
+        assets = _collect_assets(tmp_path)
+        assert len(assets) == 1
+        assert assets[0].guid == "2ac5ddc545a848008c0308d21f5d2e6b"
+
+    def test_collects_metadata_guid_assets(self, tmp_path):
+        """Assets with GUID under Metadata (standard format) should still work."""
+        from unturned_data.exporter import _collect_assets
+
+        asset_dir = tmp_path / "Assets" / "Blacklists"
+        asset_dir.mkdir(parents=True)
+        (asset_dir / "Test.asset").write_text(
+            "Metadata\n{\n\tGUID abc123def456abc123def456abc123de\n\tType SDG.Test, Assembly\n}\n"
+        )
+
+        assets = _collect_assets(tmp_path)
+        assert len(assets) == 1
+        assert assets[0].guid == "abc123def456abc123def456abc123de"
+
+
+class TestGuidIndexTagKind:
+    def test_tag_assets_have_kind_tag(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.schema import AssetEntry
+
+        assets = [AssetEntry(guid="aaa", name="Sewing Capabilities",
+                             csharp_type="Tag",
+                             source_path="Assets/Tags/Crafting/Sewing/CraftingTag_Sewing.asset")]
+        gi = _build_guid_index([], assets, {}, "2026-01-01")
+        assert gi.entries["aaa"].kind == "tag"
+
+    def test_non_tag_assets_have_kind_asset(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.schema import AssetEntry
+
+        assets = [AssetEntry(guid="bbb", name="Test Blacklist",
+                             csharp_type="CraftingBlacklistAsset",
+                             source_path="Assets/Blacklists/Test.asset")]
+        gi = _build_guid_index([], assets, {}, "2026-01-01")
+        assert gi.entries["bbb"].kind == "asset"
+
+
 class TestExportPipelineResolution:
     def test_exported_blueprints_contain_guids(self, tmp_path):
         """End-to-end: exported JSON should have GUIDs in blueprints, not numeric IDs."""
