@@ -424,6 +424,7 @@ def _build_guid_index(
                     id=entry.id,
                     type=entry.type,
                     name=entry.name,
+                    kind="item",
                 )
             if entry.id:
                 id_str = str(entry.id)
@@ -446,6 +447,7 @@ def _build_guid_index(
                     id=0,
                     type=asset.csharp_type,
                     name=asset.name,
+                    kind="asset",
                 )
 
     # Index base entries and assets
