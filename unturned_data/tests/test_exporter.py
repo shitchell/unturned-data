@@ -240,3 +240,36 @@ class TestBuildGuidIndexByIdFormat:
         ]
         gi = _build_guid_index(entries, [], {}, "2026-01-01")
         assert "0" not in gi.by_id
+
+
+class TestSyntheticGuids:
+    def test_generates_synthetic_for_guidless_entry(self):
+        from unturned_data.exporter import _ensure_guids
+        from unturned_data.models import BundleEntry
+
+        entries = [BundleEntry(guid="", type="Gun", id=42, name="No GUID Gun",
+                               source_path="Items/Guns/NoGuid")]
+        _ensure_guids(entries, "base")
+        assert entries[0].guid.startswith("00000")
+        assert len(entries[0].guid) == 32
+
+    def test_synthetic_guid_is_deterministic(self):
+        from unturned_data.exporter import _ensure_guids
+        from unturned_data.models import BundleEntry
+
+        e1 = [BundleEntry(guid="", type="Gun", id=42, name="X",
+                          source_path="Items/Guns/X")]
+        e2 = [BundleEntry(guid="", type="Gun", id=42, name="X",
+                          source_path="Items/Guns/X")]
+        _ensure_guids(e1, "base")
+        _ensure_guids(e2, "base")
+        assert e1[0].guid == e2[0].guid
+
+    def test_does_not_overwrite_existing_guid(self):
+        from unturned_data.exporter import _ensure_guids
+        from unturned_data.models import BundleEntry
+
+        entries = [BundleEntry(guid="realguid123", type="Gun", id=42,
+                               name="Has GUID", source_path="Items/Guns/X")]
+        _ensure_guids(entries, "base")
+        assert entries[0].guid == "realguid123"

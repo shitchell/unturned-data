@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import datetime, timezone
@@ -49,6 +50,18 @@ def _get_namespace(source_path: str) -> str:
     """Derive the asset namespace from source_path's top-level directory."""
     top_dir = source_path.split("/")[0] if source_path else ""
     return _SOURCE_DIR_TO_NAMESPACE.get(top_dir, top_dir.lower())
+
+
+def _ensure_guids(entries: list[BundleEntry], source: str) -> None:
+    """Assign deterministic synthetic GUIDs to entries that lack one.
+
+    Synthetic GUIDs start with '00000' to distinguish them from real GUIDs.
+    """
+    for entry in entries:
+        if not entry.guid:
+            hash_input = f"{source}:{entry.type}:{entry.id}"
+            digest = hashlib.sha256(hash_input.encode()).hexdigest()
+            entry.guid = "00000" + digest[:27]
 
 
 # The fields that belong in Schema C entries.json -- only these are serialized
