@@ -322,7 +322,9 @@ def _build_guid_index(
     for safe_name, (m_entries, m_assets) in sorted(map_data.items()):
         if m_entries:
             _index_bundle_entries(
-                m_entries, f"maps/{safe_name}/entries.json", source_label=safe_name,
+                m_entries,
+                f"maps/{safe_name}/entries.json",
+                source_label=safe_name,
             )
         if m_assets:
             _index_assets(m_assets, f"maps/{safe_name}/assets.json")
