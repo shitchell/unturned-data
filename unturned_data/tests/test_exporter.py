@@ -407,3 +407,36 @@ class TestResolveBlueprintIds:
         )
         _resolve_blueprint_ids([tool, entry], "base")
         assert entry.blueprints[0].inputs[0]["ID"] == "tool-guid"
+
+
+class TestExportPipelineResolution:
+    def test_exported_blueprints_contain_guids(self, tmp_path):
+        """End-to-end: exported JSON should have GUIDs in blueprints, not numeric IDs."""
+        import json
+        from unturned_data.exporter import export_schema_c
+
+        # Create a minimal fixture with two items and a legacy blueprint
+        items_dir = tmp_path / "bundles" / "Items" / "Edible"
+
+        bread_dir = items_dir / "Bread"
+        bread_dir.mkdir(parents=True)
+        (bread_dir / "Bread.dat").write_text(
+            "GUID 27b44ccf4da14c2987a4b5903557ad78\nType Food\nID 36033\n")
+        (bread_dir / "English.dat").write_text("Name Bread\n")
+
+        sandwich_dir = items_dir / "Sandwich"
+        sandwich_dir.mkdir(parents=True)
+        (sandwich_dir / "Sandwich.dat").write_text(
+            "GUID 1fc347d9086f43c18c20fecdd9c02b39\nType Food\nID 36079\n"
+            "Blueprints 1\nBlueprint_0_Type Supply\n"
+            "Blueprint_0_Supply_0_ID 36033\nBlueprint_0_Supply_0_Amount 1\n")
+        (sandwich_dir / "English.dat").write_text("Name Sandwich\n")
+
+        out = tmp_path / "output"
+        export_schema_c(tmp_path / "bundles", [], out)
+
+        entries = json.loads((out / "base" / "entries.json").read_text())
+        sandwich = next(e for e in entries if e["name"] == "Sandwich")
+        assert sandwich["blueprints"][0]["inputs"] == [
+            "27b44ccf4da14c2987a4b5903557ad78"
+        ]

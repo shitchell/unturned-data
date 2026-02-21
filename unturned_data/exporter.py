@@ -490,6 +490,8 @@ def export_schema_c(
 
     # --- Base entries ---
     base_entries = _parse_entries(base_bundles)
+    _ensure_guids(base_entries, "base")
+    _resolve_blueprint_ids(base_entries, "base")
     base_serialized = _serialize_entries(base_entries)
     _write_json(output_dir / "base" / "entries.json", base_serialized)
 
@@ -512,6 +514,8 @@ def export_schema_c(
         map_entries: list[BundleEntry] = []
         if map_bundles.is_dir():
             map_entries = _parse_entries(map_bundles)
+            _ensure_guids(map_entries, safe)
+            _resolve_blueprint_ids(map_entries, safe, extra_entries=base_entries)
 
         # Collect map assets
         map_assets: list[AssetEntry] = []
