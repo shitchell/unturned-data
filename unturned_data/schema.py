@@ -100,4 +100,4 @@ class GuidIndex(BaseModel):
     total_entries: int = 0
     generated_at: str = ""
     entries: dict[str, GuidIndexEntry] = {}
-    by_id: dict[str, str] = {}
+    by_id: dict[str, dict[str, dict[str, str]]] = {}

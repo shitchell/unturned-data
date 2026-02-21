@@ -70,12 +70,37 @@ class TestGuidIndex:
                     file="maps/polaris/entries.json", index=5, type="Food", name="Berry"
                 ),
             },
-            by_id={"42": "abc123", "36001": "def456"},
+            by_id={
+                "42": {"items": {"base": "abc123"}},
+                "36001": {"items": {"base": "def456"}},
+            },
         )
         d = gi.model_dump()
         assert d["total_entries"] == 2
         assert d["entries"]["abc123"]["name"] == "AK"
-        assert d["by_id"]["42"] == "abc123"
+        assert d["by_id"]["42"]["items"]["base"] == "abc123"
+
+
+class TestGuidIndexByIdFormat:
+    def test_by_id_namespace_source_grouped(self):
+        """by_id should nest namespace -> source -> guid."""
+        gi = GuidIndex(
+            total_entries=1,
+            generated_at="2026-01-01",
+            entries={},
+            by_id={
+                "36033": {
+                    "items": {"base": "27b44ccf4da14c2987a4b5903557ad78"},
+                    "spawns": {"base": "def456"},
+                }
+            },
+        )
+        assert gi.by_id["36033"]["items"]["base"] == "27b44ccf4da14c2987a4b5903557ad78"
+        assert gi.by_id["36033"]["spawns"]["base"] == "def456"
+
+    def test_by_id_empty(self):
+        gi = GuidIndex(total_entries=0, generated_at="", entries={}, by_id={})
+        assert gi.by_id == {}
 
 
 class TestAssetEntry:
