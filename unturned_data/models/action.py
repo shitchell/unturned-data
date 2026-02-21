@@ -48,12 +48,14 @@ class Action(BaseModel):
             text = str(raw.get(f"{prefix}Text", ""))
             tooltip = str(raw.get(f"{prefix}Tooltip", ""))
 
-            results.append(Action(
-                type=action_type,
-                source=source,
-                blueprint_indices=indices,
-                key=key,
-                text=text,
-                tooltip=tooltip,
-            ))
+            results.append(
+                Action(
+                    type=action_type,
+                    source=source,
+                    blueprint_indices=indices,
+                    key=key,
+                    text=text,
+                    tooltip=tooltip,
+                )
+            )
         return results
