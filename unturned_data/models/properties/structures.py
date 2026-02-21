@@ -82,7 +82,5 @@ class StructureProperties(ItemProperties):
         )
         fields["unsaveable"] = _get_bool(raw, "Unsaveable")
         fields["armor_tier"] = _get_str(raw, "Armor_Tier")
-        fields["foliage_cut_radius"] = _get_float(
-            raw, "Foliage_Cut_Radius", 6.0
-        )
+        fields["foliage_cut_radius"] = _get_float(raw, "Foliage_Cut_Radius", 6.0)
         return cls(**fields)
