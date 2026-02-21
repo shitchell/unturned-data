@@ -293,3 +293,117 @@ class TestSyntheticGuids:
         ]
         _ensure_guids(entries, "base")
         assert entries[0].guid == "realguid123"
+
+
+class TestResolveBlueprintIds:
+    def test_resolves_numeric_id_to_guid(self):
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        bread = BundleEntry(guid="bread-guid", type="Food", id=36033,
+                            name="Bread", source_path="Items/Edible/Bread")
+        sandwich = BundleEntry(
+            guid="sandwich-guid", type="Food", id=36079,
+            name="Sandwich", source_path="Items/Edible/Sandwich",
+            blueprints=[Blueprint(name="Craft", inputs=["36033"], outputs=["this"])],
+        )
+        _resolve_blueprint_ids([bread, sandwich], "base")
+        assert sandwich.blueprints[0].inputs == ["bread-guid"]
+        assert sandwich.blueprints[0].outputs == ["this"]
+
+    def test_resolves_numeric_id_with_quantity(self):
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        berry = BundleEntry(guid="berry-guid", type="Water", id=36022,
+                            name="Berry", source_path="Items/Edible/Berry")
+        sandwich = BundleEntry(
+            guid="sandwich-guid", type="Food", id=36079,
+            name="Sandwich", source_path="Items/Edible/Sandwich",
+            blueprints=[Blueprint(name="Craft", inputs=["36022 x 5"],
+                                  outputs=["this"])],
+        )
+        _resolve_blueprint_ids([berry, sandwich], "base")
+        assert sandwich.blueprints[0].inputs == ["berry-guid x 5"]
+
+    def test_leaves_guid_unchanged(self):
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        entry = BundleEntry(
+            guid="aaa", type="Gun", id=1, name="X",
+            source_path="Items/Guns/X",
+            blueprints=[Blueprint(name="Craft",
+                                  inputs=["abcdef1234567890abcdef1234567890"],
+                                  outputs=["this"])],
+        )
+        _resolve_blueprint_ids([entry], "base")
+        assert entry.blueprints[0].inputs == ["abcdef1234567890abcdef1234567890"]
+
+    def test_leaves_this_unchanged(self):
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        entry = BundleEntry(
+            guid="aaa", type="Gun", id=1, name="X",
+            source_path="Items/Guns/X",
+            blueprints=[Blueprint(name="Craft", inputs=["100"],
+                                  outputs=["this"])],
+        )
+        item = BundleEntry(guid="bbb", type="Melee", id=100, name="Y",
+                           source_path="Items/Melee/Y")
+        _resolve_blueprint_ids([entry, item], "base")
+        assert entry.blueprints[0].outputs == ["this"]
+
+    def test_prefers_items_namespace(self):
+        """When a numeric ID collides across namespaces, items should win."""
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        item = BundleEntry(guid="item-guid", type="Food", id=100,
+                           name="Food Item", source_path="Items/Edible/Food")
+        spawn = BundleEntry(guid="spawn-guid", type="Spawn", id=100,
+                            name="Spawn 100", source_path="Spawns/Spawn_100")
+        recipe = BundleEntry(
+            guid="recipe-guid", type="Food", id=200,
+            name="Recipe", source_path="Items/Edible/Recipe",
+            blueprints=[Blueprint(name="Craft", inputs=["100"],
+                                  outputs=["this"])],
+        )
+        _resolve_blueprint_ids([item, spawn, recipe], "base")
+        assert recipe.blueprints[0].inputs == ["item-guid"]
+
+    def test_warns_on_unresolvable_id(self, caplog):
+        """Unresolvable IDs should log a warning and stay as-is."""
+        import logging
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        entry = BundleEntry(
+            guid="aaa", type="Gun", id=1, name="X",
+            source_path="Items/Guns/X",
+            blueprints=[Blueprint(name="Craft", inputs=["99999"],
+                                  outputs=["this"])],
+        )
+        with caplog.at_level(logging.WARNING):
+            _resolve_blueprint_ids([entry], "base")
+        assert entry.blueprints[0].inputs == ["99999"]
+        assert "99999" in caplog.text
+
+    def test_resolves_tool_dict_input(self):
+        """Tool inputs are dicts with ID key -- should also be resolved."""
+        from unturned_data.exporter import _resolve_blueprint_ids
+        from unturned_data.models import Blueprint, BundleEntry
+
+        tool = BundleEntry(guid="tool-guid", type="Melee", id=76,
+                           name="Saw", source_path="Items/Melee/Saw")
+        entry = BundleEntry(
+            guid="aaa", type="Structure", id=1, name="X",
+            source_path="Items/Structures/X",
+            blueprints=[Blueprint(name="Craft",
+                                  inputs=[{"ID": "76", "Amount": 1,
+                                           "Delete": False}],
+                                  outputs=["this"])],
+        )
+        _resolve_blueprint_ids([tool, entry], "base")
+        assert entry.blueprints[0].inputs[0]["ID"] == "tool-guid"

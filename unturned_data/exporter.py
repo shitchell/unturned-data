@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from unturned_data.categories import parse_entry
 from unturned_data.crafting_blacklist import resolve_crafting_blacklist
@@ -62,6 +65,124 @@ def _ensure_guids(entries: list[BundleEntry], source: str) -> None:
             hash_input = f"{source}:{entry.type}:{entry.id}"
             digest = hashlib.sha256(hash_input.encode()).hexdigest()
             entry.guid = "00000" + digest[:27]
+
+
+_GUID_RE = re.compile(r"^[0-9a-f]{32}$")
+
+
+def _resolve_blueprint_ids(
+    entries: list[BundleEntry],
+    source: str,
+    extra_entries: list[BundleEntry] | None = None,
+) -> None:
+    """Resolve numeric IDs in blueprint inputs/outputs to GUIDs.
+
+    Builds an ID->GUID map from all provided entries, then walks
+    every blueprint reference and replaces numeric IDs with GUIDs.
+
+    Resolution priority:
+    1. Same namespace (items) + same source
+    2. Same namespace (items) + any source
+    3. Any namespace + same source (with warning)
+    4. Any namespace + any source (with warning)
+
+    Args:
+        entries: The entries to process (blueprints will be mutated in-place).
+        source: Source label for these entries (e.g., "base" or map safe name).
+        extra_entries: Additional entries for cross-source resolution (e.g.,
+            base entries when resolving a map's blueprints).
+    """
+    # Build lookup: {numeric_id: {namespace: {source_label: guid}}}
+    id_map: dict[int, dict[str, dict[str, str]]] = {}
+
+    def _index(entry_list: list[BundleEntry], src: str) -> None:
+        for e in entry_list:
+            if not e.id or e.id == 0 or not e.guid:
+                continue
+            ns = _get_namespace(e.source_path)
+            if e.id not in id_map:
+                id_map[e.id] = {}
+            if ns not in id_map[e.id]:
+                id_map[e.id][ns] = {}
+            id_map[e.id][ns][src] = e.guid
+
+    _index(entries, source)
+    if extra_entries:
+        for e in extra_entries:
+            _index([e], "base")
+
+    def _resolve_id(numeric_id: int, entry_name: str, bp_name: str) -> str | None:
+        """Resolve a numeric ID to a GUID using priority chain."""
+        ns_map = id_map.get(numeric_id)
+        if not ns_map:
+            return None
+
+        # Priority 1: items namespace, same source
+        if "items" in ns_map and source in ns_map["items"]:
+            return ns_map["items"][source]
+        # Priority 2: items namespace, any source
+        if "items" in ns_map:
+            return next(iter(ns_map["items"].values()))
+        # Priority 3: any namespace, same source (warn)
+        for ns, sources in ns_map.items():
+            if source in sources:
+                logger.warning(
+                    "Blueprint ref %d in %s/%s resolved to non-item "
+                    "namespace '%s'", numeric_id, entry_name, bp_name, ns)
+                return sources[source]
+        # Priority 4: any namespace, any source (warn)
+        for ns, sources in ns_map.items():
+            guid = next(iter(sources.values()))
+            logger.warning(
+                "Blueprint ref %d in %s/%s resolved to non-item "
+                "namespace '%s' (cross-source)", numeric_id, entry_name,
+                bp_name, ns)
+            return guid
+        return None
+
+    def _resolve_ref(ref, entry_name: str, bp_name: str):
+        """Resolve a single blueprint input/output reference."""
+        if isinstance(ref, dict):
+            # Tool dict: {"ID": "76", "Amount": 1, "Delete": False}
+            ref_id = ref.get("ID", "")
+            if isinstance(ref_id, str) and ref_id.isdigit():
+                guid = _resolve_id(int(ref_id), entry_name, bp_name)
+                if guid:
+                    ref = dict(ref)  # copy to avoid mutating shared dicts
+                    ref["ID"] = guid
+            return ref
+
+        if not isinstance(ref, str):
+            return ref
+        if ref == "this":
+            return ref
+
+        # Parse "ID" or "ID x N"
+        parts = ref.split(" x ")
+        id_str = parts[0].strip()
+
+        # Already a GUID?
+        if _GUID_RE.match(id_str):
+            return ref
+
+        # Numeric ID?
+        if id_str.isdigit():
+            guid = _resolve_id(int(id_str), entry_name, bp_name)
+            if guid:
+                if len(parts) > 1:
+                    return f"{guid} x {parts[1].strip()}"
+                return guid
+            else:
+                logger.warning(
+                    "Unresolvable blueprint ref ID %s in %s/%s",
+                    id_str, entry_name, bp_name)
+        return ref
+
+    # Walk all entries and resolve
+    for entry in entries:
+        for bp in entry.blueprints:
+            bp.inputs = [_resolve_ref(r, entry.name, bp.name) for r in bp.inputs]
+            bp.outputs = [_resolve_ref(r, entry.name, bp.name) for r in bp.outputs]
 
 
 # The fields that belong in Schema C entries.json -- only these are serialized
