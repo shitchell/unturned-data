@@ -303,11 +303,19 @@ class TestResolveBlueprintIds:
         from unturned_data.exporter import _resolve_blueprint_ids
         from unturned_data.models import Blueprint, BundleEntry
 
-        bread = BundleEntry(guid="bread-guid", type="Food", id=36033,
-                            name="Bread", source_path="Items/Edible/Bread")
+        bread = BundleEntry(
+            guid="bread-guid",
+            type="Food",
+            id=36033,
+            name="Bread",
+            source_path="Items/Edible/Bread",
+        )
         sandwich = BundleEntry(
-            guid="sandwich-guid", type="Food", id=36079,
-            name="Sandwich", source_path="Items/Edible/Sandwich",
+            guid="sandwich-guid",
+            type="Food",
+            id=36079,
+            name="Sandwich",
+            source_path="Items/Edible/Sandwich",
             blueprints=[Blueprint(name="Craft", inputs=["36033"], outputs=["this"])],
         )
         _resolve_blueprint_ids([bread, sandwich], "base")
@@ -318,13 +326,22 @@ class TestResolveBlueprintIds:
         from unturned_data.exporter import _resolve_blueprint_ids
         from unturned_data.models import Blueprint, BundleEntry
 
-        berry = BundleEntry(guid="berry-guid", type="Water", id=36022,
-                            name="Berry", source_path="Items/Edible/Berry")
+        berry = BundleEntry(
+            guid="berry-guid",
+            type="Water",
+            id=36022,
+            name="Berry",
+            source_path="Items/Edible/Berry",
+        )
         sandwich = BundleEntry(
-            guid="sandwich-guid", type="Food", id=36079,
-            name="Sandwich", source_path="Items/Edible/Sandwich",
-            blueprints=[Blueprint(name="Craft", inputs=["36022 x 5"],
-                                  outputs=["this"])],
+            guid="sandwich-guid",
+            type="Food",
+            id=36079,
+            name="Sandwich",
+            source_path="Items/Edible/Sandwich",
+            blueprints=[
+                Blueprint(name="Craft", inputs=["36022 x 5"], outputs=["this"])
+            ],
         )
         _resolve_blueprint_ids([berry, sandwich], "base")
         assert sandwich.blueprints[0].inputs == ["berry-guid x 5"]
@@ -334,11 +351,18 @@ class TestResolveBlueprintIds:
         from unturned_data.models import Blueprint, BundleEntry
 
         entry = BundleEntry(
-            guid="aaa", type="Gun", id=1, name="X",
+            guid="aaa",
+            type="Gun",
+            id=1,
+            name="X",
             source_path="Items/Guns/X",
-            blueprints=[Blueprint(name="Craft",
-                                  inputs=["abcdef1234567890abcdef1234567890"],
-                                  outputs=["this"])],
+            blueprints=[
+                Blueprint(
+                    name="Craft",
+                    inputs=["abcdef1234567890abcdef1234567890"],
+                    outputs=["this"],
+                )
+            ],
         )
         _resolve_blueprint_ids([entry], "base")
         assert entry.blueprints[0].inputs == ["abcdef1234567890abcdef1234567890"]
@@ -348,13 +372,16 @@ class TestResolveBlueprintIds:
         from unturned_data.models import Blueprint, BundleEntry
 
         entry = BundleEntry(
-            guid="aaa", type="Gun", id=1, name="X",
+            guid="aaa",
+            type="Gun",
+            id=1,
+            name="X",
             source_path="Items/Guns/X",
-            blueprints=[Blueprint(name="Craft", inputs=["100"],
-                                  outputs=["this"])],
+            blueprints=[Blueprint(name="Craft", inputs=["100"], outputs=["this"])],
         )
-        item = BundleEntry(guid="bbb", type="Melee", id=100, name="Y",
-                           source_path="Items/Melee/Y")
+        item = BundleEntry(
+            guid="bbb", type="Melee", id=100, name="Y", source_path="Items/Melee/Y"
+        )
         _resolve_blueprint_ids([entry, item], "base")
         assert entry.blueprints[0].outputs == ["this"]
 
@@ -363,15 +390,27 @@ class TestResolveBlueprintIds:
         from unturned_data.exporter import _resolve_blueprint_ids
         from unturned_data.models import Blueprint, BundleEntry
 
-        item = BundleEntry(guid="item-guid", type="Food", id=100,
-                           name="Food Item", source_path="Items/Edible/Food")
-        spawn = BundleEntry(guid="spawn-guid", type="Spawn", id=100,
-                            name="Spawn 100", source_path="Spawns/Spawn_100")
+        item = BundleEntry(
+            guid="item-guid",
+            type="Food",
+            id=100,
+            name="Food Item",
+            source_path="Items/Edible/Food",
+        )
+        spawn = BundleEntry(
+            guid="spawn-guid",
+            type="Spawn",
+            id=100,
+            name="Spawn 100",
+            source_path="Spawns/Spawn_100",
+        )
         recipe = BundleEntry(
-            guid="recipe-guid", type="Food", id=200,
-            name="Recipe", source_path="Items/Edible/Recipe",
-            blueprints=[Blueprint(name="Craft", inputs=["100"],
-                                  outputs=["this"])],
+            guid="recipe-guid",
+            type="Food",
+            id=200,
+            name="Recipe",
+            source_path="Items/Edible/Recipe",
+            blueprints=[Blueprint(name="Craft", inputs=["100"], outputs=["this"])],
         )
         _resolve_blueprint_ids([item, spawn, recipe], "base")
         assert recipe.blueprints[0].inputs == ["item-guid"]
@@ -383,10 +422,12 @@ class TestResolveBlueprintIds:
         from unturned_data.models import Blueprint, BundleEntry
 
         entry = BundleEntry(
-            guid="aaa", type="Gun", id=1, name="X",
+            guid="aaa",
+            type="Gun",
+            id=1,
+            name="X",
             source_path="Items/Guns/X",
-            blueprints=[Blueprint(name="Craft", inputs=["99999"],
-                                  outputs=["this"])],
+            blueprints=[Blueprint(name="Craft", inputs=["99999"], outputs=["this"])],
         )
         with caplog.at_level(logging.WARNING):
             _resolve_blueprint_ids([entry], "base")
@@ -398,15 +439,26 @@ class TestResolveBlueprintIds:
         from unturned_data.exporter import _resolve_blueprint_ids
         from unturned_data.models import Blueprint, BundleEntry
 
-        tool = BundleEntry(guid="tool-guid", type="Melee", id=76,
-                           name="Saw", source_path="Items/Melee/Saw")
+        tool = BundleEntry(
+            guid="tool-guid",
+            type="Melee",
+            id=76,
+            name="Saw",
+            source_path="Items/Melee/Saw",
+        )
         entry = BundleEntry(
-            guid="aaa", type="Structure", id=1, name="X",
+            guid="aaa",
+            type="Structure",
+            id=1,
+            name="X",
             source_path="Items/Structures/X",
-            blueprints=[Blueprint(name="Craft",
-                                  inputs=[{"ID": "76", "Amount": 1,
-                                           "Delete": False}],
-                                  outputs=["this"])],
+            blueprints=[
+                Blueprint(
+                    name="Craft",
+                    inputs=[{"ID": "76", "Amount": 1, "Delete": False}],
+                    outputs=["this"],
+                )
+            ],
         )
         _resolve_blueprint_ids([tool, entry], "base")
         assert entry.blueprints[0].inputs[0]["ID"] == "tool-guid"
@@ -447,9 +499,14 @@ class TestGuidIndexTagKind:
         from unturned_data.exporter import _build_guid_index
         from unturned_data.schema import AssetEntry
 
-        assets = [AssetEntry(guid="aaa", name="Sewing Capabilities",
-                             csharp_type="Tag",
-                             source_path="Assets/Tags/Crafting/Sewing/CraftingTag_Sewing.asset")]
+        assets = [
+            AssetEntry(
+                guid="aaa",
+                name="Sewing Capabilities",
+                csharp_type="Tag",
+                source_path="Assets/Tags/Crafting/Sewing/CraftingTag_Sewing.asset",
+            )
+        ]
         gi = _build_guid_index([], assets, {}, "2026-01-01")
         assert gi.entries["aaa"].kind == "tag"
 
@@ -457,9 +514,14 @@ class TestGuidIndexTagKind:
         from unturned_data.exporter import _build_guid_index
         from unturned_data.schema import AssetEntry
 
-        assets = [AssetEntry(guid="bbb", name="Test Blacklist",
-                             csharp_type="CraftingBlacklistAsset",
-                             source_path="Assets/Blacklists/Test.asset")]
+        assets = [
+            AssetEntry(
+                guid="bbb",
+                name="Test Blacklist",
+                csharp_type="CraftingBlacklistAsset",
+                source_path="Assets/Blacklists/Test.asset",
+            )
+        ]
         gi = _build_guid_index([], assets, {}, "2026-01-01")
         assert gi.entries["bbb"].kind == "asset"
 
@@ -476,7 +538,8 @@ class TestExportPipelineResolution:
         bread_dir = items_dir / "Bread"
         bread_dir.mkdir(parents=True)
         (bread_dir / "Bread.dat").write_text(
-            "GUID 27b44ccf4da14c2987a4b5903557ad78\nType Food\nID 36033\n")
+            "GUID 27b44ccf4da14c2987a4b5903557ad78\nType Food\nID 36033\n"
+        )
         (bread_dir / "English.dat").write_text("Name Bread\n")
 
         sandwich_dir = items_dir / "Sandwich"
@@ -484,7 +547,8 @@ class TestExportPipelineResolution:
         (sandwich_dir / "Sandwich.dat").write_text(
             "GUID 1fc347d9086f43c18c20fecdd9c02b39\nType Food\nID 36079\n"
             "Blueprints 1\nBlueprint_0_Type Supply\n"
-            "Blueprint_0_Supply_0_ID 36033\nBlueprint_0_Supply_0_Amount 1\n")
+            "Blueprint_0_Supply_0_ID 36033\nBlueprint_0_Supply_0_Amount 1\n"
+        )
         (sandwich_dir / "English.dat").write_text("Name Sandwich\n")
 
         out = tmp_path / "output"

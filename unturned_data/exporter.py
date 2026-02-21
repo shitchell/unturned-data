@@ -127,16 +127,24 @@ def _resolve_blueprint_ids(
         for ns, sources in ns_map.items():
             if source in sources:
                 logger.warning(
-                    "Blueprint ref %d in %s/%s resolved to non-item "
-                    "namespace '%s'", numeric_id, entry_name, bp_name, ns)
+                    "Blueprint ref %d in %s/%s resolved to non-item " "namespace '%s'",
+                    numeric_id,
+                    entry_name,
+                    bp_name,
+                    ns,
+                )
                 return sources[source]
         # Priority 4: any namespace, any source (warn)
         for ns, sources in ns_map.items():
             guid = next(iter(sources.values()))
             logger.warning(
                 "Blueprint ref %d in %s/%s resolved to non-item "
-                "namespace '%s' (cross-source)", numeric_id, entry_name,
-                bp_name, ns)
+                "namespace '%s' (cross-source)",
+                numeric_id,
+                entry_name,
+                bp_name,
+                ns,
+            )
             return guid
         return None
 
@@ -175,7 +183,10 @@ def _resolve_blueprint_ids(
             else:
                 logger.warning(
                     "Unresolvable blueprint ref ID %s in %s/%s",
-                    id_str, entry_name, bp_name)
+                    id_str,
+                    entry_name,
+                    bp_name,
+                )
         return ref
 
     # Walk all entries and resolve

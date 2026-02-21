@@ -4,6 +4,7 @@ Tests for category model classes and type dispatch.
 Covers: Gun, MeleeWeapon, Consumeable, Clothing, Vehicle, Animal,
 BarricadeItem, StructureItem, GenericEntry, and parse_entry dispatch.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -539,14 +540,34 @@ class TestTypeRegistry:
 
     def test_all_expected_types_present(self):
         expected = {
-            "Gun", "Melee", "Throwable",
-            "Food", "Water", "Medical",
-            "Shirt", "Pants", "Hat", "Vest", "Backpack", "Mask", "Glasses",
-            "Barricade", "Trap", "Storage", "Sentry", "Generator", "Beacon", "Oil_Pump",
+            "Gun",
+            "Melee",
+            "Throwable",
+            "Food",
+            "Water",
+            "Medical",
+            "Shirt",
+            "Pants",
+            "Hat",
+            "Vest",
+            "Backpack",
+            "Mask",
+            "Glasses",
+            "Barricade",
+            "Trap",
+            "Storage",
+            "Sentry",
+            "Generator",
+            "Beacon",
+            "Oil_Pump",
             "Structure",
             "Magazine",
-            "Sight", "Grip", "Barrel", "Tactical",
-            "Vehicle", "Animal",
+            "Sight",
+            "Grip",
+            "Barrel",
+            "Tactical",
+            "Vehicle",
+            "Animal",
             "Spawn",
         }
         assert expected == set(TYPE_REGISTRY.keys())
@@ -554,8 +575,11 @@ class TestTypeRegistry:
     def test_parse_entry_returns_bundle_entry_subclass(self):
         """Every registered class should be a BundleEntry subclass."""
         from unturned_data.models import BundleEntry
+
         for type_name, cls in TYPE_REGISTRY.items():
-            assert issubclass(cls, BundleEntry), f"{type_name} -> {cls} is not a BundleEntry subclass"
+            assert issubclass(
+                cls, BundleEntry
+            ), f"{type_name} -> {cls} is not a BundleEntry subclass"
 
 
 # ---------------------------------------------------------------------------
@@ -569,9 +593,17 @@ class TestParsedComputedField:
         gun = Gun.from_raw(raw, english, "gun_maplestrike")
         p = gun.parsed
         expected = {
-            "caliber", "firerate", "range", "fire_modes",
-            "hooks", "ammo_min", "ammo_max", "durability",
-            "spread_aim", "spread_angle", "damage",
+            "caliber",
+            "firerate",
+            "range",
+            "fire_modes",
+            "hooks",
+            "ammo_min",
+            "ammo_max",
+            "durability",
+            "spread_aim",
+            "spread_angle",
+            "damage",
         }
         assert set(p.keys()) == expected
         assert p["damage"] is not None
@@ -604,8 +636,11 @@ class TestParsedComputedField:
 
     def test_throwable_parsed_keys(self):
         throwable = Throwable(
-            type="Throwable", id=1, name="Grenade",
-            fuse=2.5, explosion=10.0,
+            type="Throwable",
+            id=1,
+            name="Grenade",
+            fuse=2.5,
+            explosion=10.0,
         )
         p = throwable.parsed
         expected = {"fuse", "explosion", "damage"}
@@ -631,8 +666,12 @@ class TestParsedComputedField:
 
     def test_magazine_parsed_keys(self):
         mag = Magazine(
-            type="Magazine", id=1, name="Test Mag",
-            amount=30, count_min=5, count_max=10,
+            type="Magazine",
+            id=1,
+            name="Test Mag",
+            amount=30,
+            count_min=5,
+            count_max=10,
         )
         p = mag.parsed
         expected = {"amount", "count_min", "count_max"}
@@ -649,8 +688,14 @@ class TestParsedComputedField:
         animal = Animal.from_raw(raw, english, "animal_bear")
         p = animal.parsed
         expected = {
-            "health", "damage", "speed_run", "speed_walk",
-            "behaviour", "regen", "reward_id", "reward_xp",
+            "health",
+            "damage",
+            "speed_run",
+            "speed_walk",
+            "behaviour",
+            "regen",
+            "reward_id",
+            "reward_xp",
         }
         assert set(p.keys()) == expected
         assert p["health"] == 100
@@ -660,9 +705,18 @@ class TestParsedComputedField:
         vehicle = Vehicle.from_raw(raw, english, "vehicle_humvee")
         p = vehicle.parsed
         expected = {
-            "speed_min", "speed_max", "steer_min", "steer_max",
-            "brake", "fuel_min", "fuel_max", "fuel_capacity",
-            "health_min", "health_max", "trunk_x", "trunk_y",
+            "speed_min",
+            "speed_max",
+            "steer_min",
+            "steer_max",
+            "brake",
+            "fuel_min",
+            "fuel_max",
+            "fuel_capacity",
+            "health_min",
+            "health_max",
+            "trunk_x",
+            "trunk_y",
         }
         assert set(p.keys()) == expected
         assert p["speed_max"] == 14
@@ -677,8 +731,12 @@ class TestParsedComputedField:
     def test_spawn_table_parsed_keys(self):
         entries = [SpawnTableEntry(ref_type="asset", ref_id=42, weight=10)]
         table = SpawnTable(
-            guid="abc", type="Spawn", id=1, name="Test",
-            source_path="Spawns/Test", table_entries=entries,
+            guid="abc",
+            type="Spawn",
+            id=1,
+            name="Test",
+            source_path="Spawns/Test",
+            table_entries=entries,
         )
         p = table.parsed
         assert "table_entries" in p

@@ -4,6 +4,7 @@ Category models for Unturned item types.
 Covers: Gun, MeleeWeapon, Consumeable, Clothing, Throwable,
 BarricadeItem, StructureItem, Magazine, Attachment.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -26,7 +27,6 @@ from unturned_data.models import (
 # ---------------------------------------------------------------------------
 class Gun(BundleEntry):
     """Firearm (Type=Gun)."""
-
 
     damage: DamageStats | None = None
 
@@ -65,7 +65,6 @@ class Gun(BundleEntry):
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
-
             caliber=int(raw.get("Caliber", 0)),
             firerate=int(raw.get("Firerate", 0)),
             range=float(raw.get("Range", 0)),
@@ -121,7 +120,9 @@ class Gun(BundleEntry):
         if self.damage:
             dmg = f"{self.damage.player}/{self.damage.zombie}/{self.damage.animal}"
         modes = "/".join(self.fire_modes)
-        ammo = f"{self.ammo_min}-{self.ammo_max}" if self.ammo_max else str(self.ammo_min)
+        ammo = (
+            f"{self.ammo_min}-{self.ammo_max}" if self.ammo_max else str(self.ammo_min)
+        )
         return [
             self.name,
             str(self.id),
@@ -144,7 +145,6 @@ class Gun(BundleEntry):
 class MeleeWeapon(BundleEntry):
     """Melee weapon (Type=Melee)."""
 
-
     damage: DamageStats | None = None
 
     range: float = 0
@@ -163,7 +163,6 @@ class MeleeWeapon(BundleEntry):
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
-
             range=float(raw.get("Range", 0)),
             strength=float(raw.get("Strength", 0)),
             stamina=float(raw.get("Stamina", 0)),
@@ -224,9 +223,7 @@ class MeleeWeapon(BundleEntry):
 class Consumeable(BundleEntry):
     """Consumable item (Type=Food, Water, Medical)."""
 
-
     consumable: ConsumableStats | None = None
-
 
     @classmethod
     def from_raw(
@@ -239,7 +236,6 @@ class Consumeable(BundleEntry):
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             consumable=ConsumableStats.from_raw(raw),
-
         )
 
     @computed_field  # type: ignore[prop-decorator]
@@ -300,7 +296,6 @@ class Consumeable(BundleEntry):
 class Clothing(BundleEntry):
     """Clothing item (Type=Shirt, Pants, Hat, Vest, Backpack, Mask, Glasses)."""
 
-
     storage: StorageStats | None = None
 
     armor: float = 0
@@ -316,7 +311,6 @@ class Clothing(BundleEntry):
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             storage=StorageStats.from_raw(raw),
-
             armor=float(raw.get("Armor", 0)),
         )
 
@@ -364,7 +358,6 @@ class Clothing(BundleEntry):
 class Throwable(BundleEntry):
     """Throwable item (Type=Throwable)."""
 
-
     damage: DamageStats | None = None
 
     fuse: float = 0
@@ -381,7 +374,6 @@ class Throwable(BundleEntry):
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
-
             fuse=float(raw.get("Fuse", 0)),
             explosion=float(raw.get("Explosion", 0)),
         )
@@ -434,7 +426,6 @@ class Throwable(BundleEntry):
 class BarricadeItem(BundleEntry):
     """Barricade-type item (Type=Barricade, Trap, Storage, Sentry, Generator, Beacon, Oil_Pump)."""
 
-
     damage: DamageStats | None = None
     storage: StorageStats | None = None
 
@@ -454,7 +445,6 @@ class BarricadeItem(BundleEntry):
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
             damage=DamageStats.from_raw(raw),
             storage=StorageStats.from_raw(raw),
-
             health=float(raw.get("Health", 0)),
             range=float(raw.get("Range", 0)),
             build=str(raw.get("Build", "")),
@@ -521,7 +511,6 @@ class BarricadeItem(BundleEntry):
 class StructureItem(BundleEntry):
     """Structure item (Type=Structure)."""
 
-
     health: float = 0
     range: float = 0
     construct: str = ""
@@ -536,7 +525,6 @@ class StructureItem(BundleEntry):
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
-
             health=float(raw.get("Health", 0)),
             range=float(raw.get("Range", 0)),
             construct=str(raw.get("Construct", "")),
@@ -583,7 +571,6 @@ class StructureItem(BundleEntry):
 class Magazine(BundleEntry):
     """Magazine item (Type=Magazine)."""
 
-
     amount: int = 0
     count_min: int = 0
     count_max: int = 0
@@ -598,7 +585,6 @@ class Magazine(BundleEntry):
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
-
             amount=int(raw.get("Amount", 0)),
             count_min=int(raw.get("Count_Min", 0)),
             count_max=int(raw.get("Count_Max", 0)),
@@ -626,7 +612,11 @@ class Magazine(BundleEntry):
         ]
 
     def markdown_row(self, guid_map: dict[str, str]) -> list[str]:
-        count = f"{self.count_min}-{self.count_max}" if self.count_max else str(self.count_min)
+        count = (
+            f"{self.count_min}-{self.count_max}"
+            if self.count_max
+            else str(self.count_min)
+        )
         return [
             self.name,
             str(self.id),
@@ -644,8 +634,6 @@ class Magazine(BundleEntry):
 class Attachment(BundleEntry):
     """Attachment item (Type=Sight, Grip, Barrel, Tactical)."""
 
-
-
     @classmethod
     def from_raw(
         cls,
@@ -656,7 +644,6 @@ class Attachment(BundleEntry):
         base = BundleEntry.from_raw(raw, english, source_path)
         return cls(
             **{f: getattr(base, f) for f in BundleEntry.model_fields},
-
         )
 
     @staticmethod
